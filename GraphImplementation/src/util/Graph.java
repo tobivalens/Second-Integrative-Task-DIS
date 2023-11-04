@@ -12,6 +12,9 @@ public class Graph<T>{
     }
 
     public boolean addVertex(T contentN){
+        if(contentN ==null){
+            return false;
+        }
         boolean result=false;
         Vertex<T> newVertex= new Vertex<>(contentN, new ArrayList<>());
 

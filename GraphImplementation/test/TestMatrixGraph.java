@@ -22,8 +22,6 @@ public class TestMatrixGraph {
         mGraph.addVertex(3);
     }
 
-
-
     @Test
     public void testAdd(){
         setUp1();
