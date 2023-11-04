@@ -24,7 +24,10 @@ public class MatrixGraph<T> {
     }
 
     public boolean addVertex(T content){
-        Vertex<T> newVertex= new Vertex<>(content,new ArrayList<>());
+        if (content==null) {
+           return false;
+        }
+        Vertex<T> newVertex= new Vertex<>(content);
         if(vertexList.add(newVertex)){
             return true;
         }
@@ -71,10 +74,9 @@ public class MatrixGraph<T> {
             for (int i = 0; i < maxVertex; i++) {
                 matrixAdj[i][indexToRemove] = 0;
             }
-            vertexList.remove(vertex);
-
-
-            return true;
+            if(vertexList.remove(vertex)){
+                return true;
+            }
         }
         return false;
     }

@@ -11,6 +11,11 @@ public class Vertex<T> {
        this.adjacencyListVertex= adjVertex;
    }
 
+    public Vertex(T cont){
+        this.content= cont;
+
+    }
+
     public T getContent() {
         return content;
     }
