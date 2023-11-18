@@ -1,13 +1,18 @@
-package util;
+package com.example.pipemaniagame.model;
 
 import java.util.ArrayList;
+public class AdjacencyListGraph<T>{
+    public ArrayList<Vertex> getAdjacencyList() {
+        return adjacencyList;
+    }
 
-public class Graph<T>{
-
+    public void setAdjacencyList(ArrayList<Vertex> adjacencyList) {
+        this.adjacencyList = adjacencyList;
+    }
 
     ArrayList<Vertex> adjacencyList;
 
-    public  Graph(){
+    public AdjacencyListGraph(){
         adjacencyList= new ArrayList<>();
     }
 
@@ -17,7 +22,6 @@ public class Graph<T>{
         }
         boolean result=false;
         Vertex<T> newVertex= new Vertex<>(contentN, new ArrayList<>());
-
         if (adjacencyList.add(newVertex) ){
             result = true;
             return  result;
@@ -33,7 +37,6 @@ public class Graph<T>{
         }
         return false;
     }
-
     public boolean searchValue(Vertex<T> node){
         T cont= node.getContent();
         for(Vertex<T> ver: adjacencyList){
@@ -85,5 +88,9 @@ public class Graph<T>{
             }
         }
         return sb.toString();
+    }
+
+    public Vertex<T> searchValueIndex(int index){
+       return  adjacencyList.get(index);
     }
 }

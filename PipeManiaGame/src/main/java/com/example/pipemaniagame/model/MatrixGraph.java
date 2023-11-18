@@ -1,10 +1,10 @@
-package util;
+package com.example.pipemaniagame.model;
 
 import java.util.ArrayList;
 
 public class MatrixGraph<T> {
 
-     private int maxVertex;
+    private int maxVertex;
     private ArrayList<Vertex<T>> vertexList;
     private int[][] matrixAdj;
 
@@ -25,7 +25,7 @@ public class MatrixGraph<T> {
 
     public boolean addVertex(T content){
         if (content==null) {
-           return false;
+            return false;
         }
         Vertex<T> newVertex= new Vertex<>(content);
         if(vertexList.add(newVertex)){
@@ -112,7 +112,7 @@ public class MatrixGraph<T> {
         }
         msg+="\n";
         for (int i = 0; i < maxVertex-1; i++) {
-           msg+=(vertexList.get(i).getContent() + " ");
+            msg+=(vertexList.get(i).getContent() + " ");
             for (int j = 0; j < maxVertex; j++) {
                 msg+=(matrixAdj[i][j] + " ");
             }
@@ -120,6 +120,5 @@ public class MatrixGraph<T> {
         }
         return msg;
     }
-
-
 }
+
