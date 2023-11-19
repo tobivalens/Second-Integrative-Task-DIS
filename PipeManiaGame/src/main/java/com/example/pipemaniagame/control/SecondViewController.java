@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -22,6 +23,9 @@ public class SecondViewController implements Initializable {
 
     @FXML
     private AnchorPane anchorPane;
+
+    @FXML
+    private Button solutionButton;
 
 
     private GraphicsContext graphicsContext;
@@ -67,6 +71,37 @@ public class SecondViewController implements Initializable {
                 BackgroundPosition.CENTER,
                 BackgroundSize.DEFAULT);
         anchorPane.setBackground(new Background(background));
+
+        Image buttonImage = new Image(getClass().getResource("/images/exitButton.png").toExternalForm());
+        ImageView imageView = new ImageView(buttonImage);
+        imageView.setFitWidth(imageView.getFitWidth());
+        imageView.setFitHeight(imageView.getFitHeight());
+        goBack.setStyle("-fx-padding: 0;");
+        goBack.setGraphic(imageView);
+
+
+        Image simulateImage = new Image(getClass().getResource("/images/simulate.png").toExternalForm());
+        ImageView simulateImageView = new ImageView(simulateImage);
+        simulateImageView.setFitWidth(simulateImageView.getFitWidth());
+        simulateImageView.setFitHeight(simulateImageView.getFitHeight());
+        simulate.setStyle("-fx-padding: 0;");
+        simulate.setGraphic(simulateImageView);
+
+        Image insertImage = new Image(getClass().getResource("/images/insert.png").toExternalForm());
+        ImageView insertImageView = new ImageView(insertImage);
+        insertImageView.setFitWidth(insertImageView.getFitWidth());
+        insertImageView.setFitHeight(insertImageView.getFitHeight());
+        ponerTuberiaButton.setStyle("-fx-padding: 0;");
+        ponerTuberiaButton.setGraphic(insertImageView);
+
+        Image solutionImage = new Image(getClass().getResource("/images/solution.png").toExternalForm());
+        ImageView solutionImageView = new ImageView(solutionImage);
+        solutionImageView.setFitWidth(solutionImageView.getFitWidth());
+        solutionImageView.setFitHeight(solutionImageView.getFitHeight());
+        solutionButton.setStyle("-fx-padding: 0;");
+        solutionButton.setGraphic(solutionImageView);
+
+
 
         new Thread(
                 () ->{

@@ -35,8 +35,8 @@ public class HelloController {
 
         Image buttonImage = new Image(getClass().getResource("/images/pipeButon.png").toExternalForm());
         ImageView imageView = new ImageView(buttonImage);
-        imageView.setFitWidth(startButton.getWidth());  // ajusta el ancho según sea necesario
-        imageView.setFitHeight(startButton.getHeight()); // ajusta la altura según sea necesario
+        imageView.setFitWidth(startButton.getWidth());
+        imageView.setFitHeight(startButton.getHeight());
         startButton.setGraphic(imageView);
 
     }
