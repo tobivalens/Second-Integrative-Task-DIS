@@ -6,9 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -29,8 +27,9 @@ public class SecondViewController implements Initializable {
     @FXML
     private Button solutionButton;
 
-
     private GraphicsContext graphicsContext;
+    @FXML
+    private Label puntaje;
 
     @FXML
     private Button ponerTuberiaButton;
@@ -55,15 +54,40 @@ public class SecondViewController implements Initializable {
 
     @FXML
     private void handlePonerTuberia() {
+
         int x= Integer.parseInt(textRow.getText());
         int y=  Integer.parseInt(textColumn.getText());
         int pipe= Integer.parseInt(textPipeType.getText());
-        gameController.insertPipe(x,y,pipe);
+        if(pipe <1 || pipe>3){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alert");
+            alert.setContentText("Insert a valid Pipe number");
+            alert.showAndWait();
+        }else if(x>7 || x<0 || y>7 ||y<0){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alert");
+            alert.setContentText("Insert a valid number for row and column");
+            alert.showAndWait();
+        } else{
+            gameController.insertPipe(x,y,pipe);
+        }
+
     }
 
     @FXML
     private void handleSimular() {
-
+        if(gameController.simulate()){
+        puntaje.setText(String.valueOf(gameController.calculateScore()));
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alert");
+            alert.setContentText("La diste toda reina");
+            alert.showAndWait();
+        }else{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alert");
+            alert.setContentText("Perdiste horrible Payasota");
+            alert.showAndWait();
+        }
     }
 
     @FXML

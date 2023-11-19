@@ -4,6 +4,15 @@ import java.util.ArrayList;
 
 public class Vertex<T> {
     T content;
+
+    public ArrayList<Vertex<T>> getAdjacencyListVertex() {
+        return adjacencyListVertex;
+    }
+
+    public void setAdjacencyListVertex(ArrayList<Vertex<T>> adjacencyListVertex) {
+        this.adjacencyListVertex = adjacencyListVertex;
+    }
+
     ArrayList<Vertex<T>> adjacencyListVertex;
 
     public Vertex(T cont, ArrayList<Vertex<T>> adjVertex){

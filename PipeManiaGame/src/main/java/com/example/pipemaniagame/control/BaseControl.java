@@ -3,9 +3,11 @@ package com.example.pipemaniagame.control;
 import com.example.pipemaniagame.model.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.image.Image;
-
+import javafx.scene.control.Alert;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -21,6 +23,10 @@ public class BaseControl {
 
     private Random random;
 
+
+
+    private int watersourceIndex, drainIndex;
+
     public BaseControl(Canvas canvas) {
         this.canvas = canvas;
         this.graphicsContext = this.canvas.getGraphicsContext2D();
@@ -34,8 +40,7 @@ public class BaseControl {
     }
 
     public void paint() {
-        graphicsContext.setFill(Color.LIGHTBLUE);
-        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
         drawBoard();
     }
 
@@ -56,25 +61,56 @@ public class BaseControl {
     }
 
     public void addFullBoxes() {
+        int counter=0;
         try {
             int source = setRandomNodeSource();
             int drain = setRandomNodeDrain();
 
             for (int i = 0; i < 64; i++) {
                 if (i == source) {
-                    adjacencyGraph.addVertex(new Vertex<Box>(new Box(new Pipe(PipeType.WATERSOURCE), canvas)));
+                    adjacencyGraph.addVertex(new Vertex<>(new Box(new Pipe(PipeType.WATERSOURCE), canvas),new ArrayList<>()));
+                    setWatersourceIndex(i);
                 } else if (i == drain) {
-                    adjacencyGraph.addVertex(new Vertex<Box>(new Box(new Pipe(PipeType.DRAIN), canvas)));
+                    adjacencyGraph.addVertex(new Vertex<>(new Box(new Pipe(PipeType.DRAIN), canvas),new ArrayList<>()));
+                    setDrainIndex(i);
                 } else {
-                    adjacencyGraph.addVertex(new Vertex<Box>(new Box(null, canvas), new ArrayList<Vertex<Box>>()));
+                    adjacencyGraph.addVertex(new Vertex<>(new Box(null, canvas), new ArrayList<>()));
                 }
             }
+
+            for (int j = 0; j < adjacencyGraph.getAdjacencyList().size(); j++) {
+                Vertex<Box> vertex1 = adjacencyGraph.getAdjacencyList().get(j).getContent();
+                int row = j / 8;
+                int col = j % 8;
+
+                if (col < 7) {
+                    Vertex<Box> vertexDer = adjacencyGraph.getAdjacencyList().get(j + 1).getContent();
+                    vertex1.getAdjacencyListVertex().add(vertexDer);
+                    counter++;
+                }
+                if (col > 0) {
+                    Vertex<Box> vertexIzq = adjacencyGraph.getAdjacencyList().get(j - 1).getContent();
+                    vertex1.getAdjacencyListVertex().add(vertexIzq);
+                    counter++;
+                }
+                if (row < 7) {
+                    Vertex<Box> vertexDown = adjacencyGraph.getAdjacencyList().get(j + 8).getContent();
+                    vertex1.getAdjacencyListVertex().add(vertexDown);
+                    counter++;
+                }
+                if (row > 0) {
+                    Vertex<Box> vertexUp = adjacencyGraph.getAdjacencyList().get(j - 8).getContent();
+                    vertex1.getAdjacencyListVertex().add(vertexUp);
+                    counter++;
+                }
+            }
+            System.out.printf(counter+"");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
 
     public void drawBoard() {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -117,17 +153,86 @@ public class BaseControl {
             if (i == coordinate) {
                 Box b = (Box) adjacencyGraph.getAdjacencyList().get(i).getContent().getContent();
                 if (b.getContent() != null && b.getContent().getPipeType().equals(PipeType.WATERSOURCE)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Alert");
+                    alert.setContentText("You can not modify the water source");
+                    alert.showAndWait();
                    break;
                 } else if (b.getContent() != null && b.getContent().getPipeType().equals(PipeType.DRAIN)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Alert");
+                    alert.setContentText("You can not modify the drain");
+                    alert.showAndWait();
                     break;
                 } else {
                     b.setContent(new Pipe(pipeType));
+                    pipesUsed++;
                 }
             }
         }
     }
 
+    public boolean simulate(){
+        Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex()).getContent();
+        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex()).getContent();
+        if( simulateBFS(waterSource,drain)){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean simulateBFS(Vertex<Box> fountVertex, Vertex<Box> drainVertex) {
+        Queue<Vertex<Box>> queue = new LinkedList<>();
+        Set<Vertex<Box>> visitedVertex = new HashSet<>();
+
+        queue.add(fountVertex);
+        visitedVertex.add(fountVertex);
+
+        while (!queue.isEmpty()) {
+            Vertex<Box> currentVertex = queue.poll();
+            Box currentBox = currentVertex.getContent();
+            
+            if (currentBox.getContent() instanceof Pipe) {
+                PipeType currentPipeType = ((Pipe) currentBox.getContent()).getPipeType();
+                if (currentPipeType == PipeType.DRAIN) {
+
+                    return true;
+                }
+
+                for (Vertex<Box> nextTo : currentVertex.getAdjacencyListVertex()) {
+
+                    if (!visitedVertex.contains(nextTo)) {
+                        queue.add(nextTo);
+                        visitedVertex.add(nextTo);
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public double calculateScore(){
+        return 1.4;
+    }
+
     public int coordinadeToIdex(int x, int y){
         return x*8+y;
+    }
+
+    public int getWatersourceIndex() {
+        return watersourceIndex;
+    }
+
+    public void setWatersourceIndex(int watersourceIndex) {
+        this.watersourceIndex = watersourceIndex;
+    }
+
+    public int getDrainIndex() {
+        return drainIndex;
+    }
+
+    public void setDrainIndex(int drainIndex) {
+        this.drainIndex = drainIndex;
     }
 }
