@@ -48,19 +48,8 @@ public class GameController {
         return node;
     }
 
-    public void addFullBoxes(){
-        int source= setRandomNodeSource();
-        int drain= setRandomNodeDrain();
-     for(int i=0;i<64;i++){
-         if(i==source){
-             adjacencyGraph.addVertex(new Vertex<Box>(new Box(new Pipe(PipeType.WATERSOURCE))));
-         }else if(i==drain){
-             adjacencyGraph.addVertex(new Vertex<Box>(new Box(new Pipe(PipeType.DRAIN))));
-         }
-         else{
-             adjacencyGraph.addVertex(new Vertex<Box>(new Box(null),new ArrayList<Vertex<Box>>()));
-         }
-     }
+    public void addFullBoxes() {
+
     }
 
     public void generateBoard(){

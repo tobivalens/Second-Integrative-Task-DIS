@@ -1,5 +1,5 @@
 package com.example.pipemaniagame.model;
 
 public enum PipeType {
-    VERTICAL, HORIZONTAL, CIRCULAR, WATERSOURCE, DRAIN
+    VERTICAL, HORIZONTAL, CIRCULAR, WATERSOURCE, DRAIN, EMPTY
 }

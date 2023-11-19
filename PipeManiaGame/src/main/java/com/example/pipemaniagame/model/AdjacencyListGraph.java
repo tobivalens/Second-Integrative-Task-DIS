@@ -2,15 +2,15 @@ package com.example.pipemaniagame.model;
 
 import java.util.ArrayList;
 public class AdjacencyListGraph<T>{
-    public ArrayList<Vertex> getAdjacencyList() {
+    public ArrayList<Vertex<T>> getAdjacencyList() {
         return adjacencyList;
     }
 
-    public void setAdjacencyList(ArrayList<Vertex> adjacencyList) {
+    public void setAdjacencyList(ArrayList<Vertex<T>> adjacencyList) {
         this.adjacencyList = adjacencyList;
     }
 
-    ArrayList<Vertex> adjacencyList;
+    ArrayList<Vertex<T>> adjacencyList;
 
     public AdjacencyListGraph(){
         adjacencyList= new ArrayList<>();
