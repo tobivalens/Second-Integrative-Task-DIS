@@ -92,9 +92,42 @@ public class BaseControl {
                 Box box = (Box)vertex.getContent();
                 if (box != null) {
                     box.paint(x, y, cellSize, box);
-
                 }
             }
         }
+    }
+
+    public void insertPipe(int x, int y , int pipe){
+
+        PipeType pipeType= PipeType.EMPTY;
+        switch(pipe){
+            case 1:
+                pipeType=PipeType.VERTICAL;
+                break;
+            case 2:
+                pipeType=PipeType.HORIZONTAL;
+                break;
+            case 3:
+                pipeType=PipeType.CIRCULAR;
+                break;
+        }
+        int coordinate= coordinadeToIdex(x,y);
+
+        for (int i = 0; i < adjacencyGraph.getAdjacencyList().size(); i++) {
+            if (i == coordinate) {
+                Box b = (Box) adjacencyGraph.getAdjacencyList().get(i).getContent().getContent();
+                if (b.getContent() != null && b.getContent().getPipeType().equals(PipeType.WATERSOURCE)) {
+                   break;
+                } else if (b.getContent() != null && b.getContent().getPipeType().equals(PipeType.DRAIN)) {
+                    break;
+                } else {
+                    b.setContent(new Pipe(pipeType));
+                }
+            }
+        }
+    }
+
+    public int coordinadeToIdex(int x, int y){
+        return x*8+y;
     }
 }

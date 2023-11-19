@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -38,13 +40,25 @@ public class SecondViewController implements Initializable {
     @FXML
     private Button simulate;
 
+    @FXML
+    private TextField textRow;
+
+    @FXML
+    private TextField textColumn;
+
+    @FXML
+    private TextField textPipeType;
+
     private BaseControl gameController;
 
     private Image backgroundImage;
 
     @FXML
     private void handlePonerTuberia() {
-
+        int x= Integer.parseInt(textRow.getText());
+        int y=  Integer.parseInt(textColumn.getText());
+        int pipe= Integer.parseInt(textPipeType.getText());
+        gameController.insertPipe(x,y,pipe);
     }
 
     @FXML
