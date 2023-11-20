@@ -77,11 +77,13 @@ public class SecondViewController implements Initializable {
     @FXML
     private void handleSimular() {
         if(gameController.simulate()){
-        puntaje.setText(String.valueOf(gameController.calculateScore()));
+            gameController.finalizarPartida();
+            puntaje.setText(String.valueOf(gameController.calculateScore()));
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");
             alert.setContentText("La diste toda reina");
             alert.showAndWait();
+
         }else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");

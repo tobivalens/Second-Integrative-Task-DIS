@@ -4,6 +4,9 @@ import com.example.pipemaniagame.model.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.HashSet;
@@ -22,14 +25,16 @@ public class BaseControl {
     private long score;
 
     private Random random;
-
-
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     private int watersourceIndex, drainIndex;
 
     public BaseControl(Canvas canvas) {
         this.canvas = canvas;
         this.graphicsContext = this.canvas.getGraphicsContext2D();
+        this.startTime = LocalDateTime.now();
+        this.endTime = null;
 
         adjacencyGraph = new AdjacencyListGraph<>();
         pipesUsed = 0;
@@ -38,6 +43,34 @@ public class BaseControl {
         addFullBoxes();
 
     }
+
+    public void finalizarPartida() {
+        endTime = LocalDateTime.now();
+    }
+
+    /**
+     * Description: This method calculates the lenght in seconds of the game according to it's start and end time
+     * @return long with the duration of the game in seconds
+     */
+
+    public long getGameLenghtInSeconds(){
+        long ret=0;
+        if (startTime != null && endTime != null) {
+            Duration duracion = Duration.between(startTime, endTime);
+            ret= duracion.getSeconds();
+        }
+        else {
+            ret= -1;
+        }
+        return ret;
+    }
+
+    public double calculateScore() {
+        this.score = (100-pipesUsed)*10-getGameLenghtInSeconds();
+        return this.score;
+    }
+
+
 
     public void paint() {
 
@@ -175,6 +208,19 @@ public class BaseControl {
     public boolean simulate(){
         Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex()).getContent();
         Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex()).getContent();
+
+        for(int i=0; i< waterSource.getAdjacencyListVertex().size();i++){
+            Vertex<Box> c= (Vertex<Box>) waterSource.getAdjacencyListVertex().get(i);
+            if(c.getContent().getContent() instanceof  Pipe){
+                PipeType p=c.getContent().getContent().getPipeType();
+                if(p==PipeType.CIRCULAR){
+                    waterSource.getAdjacencyListVertex().remove(i);
+                }
+            }
+        }
+
+
+
         if( simulateBFS(waterSource,drain)){
             return true;
         }
@@ -191,30 +237,84 @@ public class BaseControl {
         while (!queue.isEmpty()) {
             Vertex<Box> currentVertex = queue.poll();
             Box currentBox = currentVertex.getContent();
-            
+
             if (currentBox.getContent() instanceof Pipe) {
                 PipeType currentPipeType = ((Pipe) currentBox.getContent()).getPipeType();
-                if (currentPipeType == PipeType.DRAIN) {
 
+                if (validateDrain()&& currentPipeType == PipeType.DRAIN) {
                     return true;
                 }
 
                 for (Vertex<Box> nextTo : currentVertex.getAdjacencyListVertex()) {
+                    if(nextTo.getContent().getContent()!=null){
+                        PipeType pipeNextto= nextTo.getContent().getContent().getPipeType();
+                        if(pipeNextto==PipeType.VERTICAL){
+                            if (validateVertical(nextTo)&&!visitedVertex.contains(nextTo)) {
+                                queue.add(nextTo);
+                                visitedVertex.add(nextTo);
+                            }
+                        }
+                        else if(pipeNextto==PipeType.HORIZONTAL){
+                            if (validateHorizontal(nextTo)&&!visitedVertex.contains(nextTo)) {
+                                queue.add(nextTo);
+                                visitedVertex.add(nextTo);
+                            }
+                        }
+                        else{
+                            if (!visitedVertex.contains(nextTo)) {
+                                queue.add(nextTo);
+                                visitedVertex.add(nextTo);
+                            }
 
-                    if (!visitedVertex.contains(nextTo)) {
-                        queue.add(nextTo);
-                        visitedVertex.add(nextTo);
+                        }
+
                     }
+
                 }
             }
         }
-
         return false;
     }
 
-    public double calculateScore(){
-        return 1.4;
+    public boolean validateDrain(){
+        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex()).getContent();
+        for(int i=0; i< drain.getAdjacencyListVertex().size();i++){
+            Vertex<Box> c= (Vertex<Box>) drain.getAdjacencyListVertex().get(i);
+            if(c.getContent().getContent() instanceof  Pipe){
+                PipeType p=c.getContent().getContent().getPipeType();
+                if(p==PipeType.CIRCULAR){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
+
+   public boolean validateVertical(Vertex<Box> value){
+       for(int i=0; i< value.getAdjacencyListVertex().size();i++){
+           Vertex<Box> c= (Vertex<Box>) value.getAdjacencyListVertex().get(i);
+           if(c.getContent().getContent() != null){
+               PipeType p=c.getContent().getContent().getPipeType();
+               if(p==PipeType.HORIZONTAL){
+                   return false;
+               }
+           }
+       }
+       return true;
+   }
+
+   public boolean validateHorizontal(Vertex<Box> value){
+       for(int i=0; i< value.getAdjacencyListVertex().size();i++){
+           Vertex<Box> c= (Vertex<Box>) value.getAdjacencyListVertex().get(i);
+           if(c.getContent().getContent() != null){
+               PipeType p=c.getContent().getContent().getPipeType();
+               if(p==PipeType.VERTICAL){
+                   return false;
+               }
+           }
+       }
+       return true;
+   }
 
     public int coordinadeToIdex(int x, int y){
         return x*8+y;
@@ -223,7 +323,6 @@ public class BaseControl {
     public int getWatersourceIndex() {
         return watersourceIndex;
     }
-
     public void setWatersourceIndex(int watersourceIndex) {
         this.watersourceIndex = watersourceIndex;
     }
