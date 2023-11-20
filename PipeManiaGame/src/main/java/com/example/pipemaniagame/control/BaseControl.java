@@ -7,17 +7,11 @@ import javafx.scene.control.Alert;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class BaseControl {
     private Canvas canvas;
     private GraphicsContext graphicsContext;
-
 
     private AdjacencyListGraph<Vertex> adjacencyGraph;
 
@@ -96,8 +90,19 @@ public class BaseControl {
     public void addFullBoxes() {
         int counter=0;
         try {
-            int source = setRandomNodeSource();
-            int drain = setRandomNodeDrain();
+            int sourceRow, sourceCol, drainRow, drainCol;
+
+            do {
+                int source = setRandomNodeSource();
+                sourceRow = source / 8;
+                sourceCol = source % 8;
+
+                int drain = setRandomNodeDrain();
+                drainRow = drain / 8;
+                drainCol = drain % 8;
+            } while (Math.abs(sourceRow - drainRow) < 2 || Math.abs(sourceCol - drainCol) < 2);
+            int source= coordinadeToIdex(sourceRow,sourceCol);
+            int drain= coordinadeToIdex(drainRow,drainCol);
 
             for (int i = 0; i < 64; i++) {
                 if (i == source) {
@@ -315,6 +320,78 @@ public class BaseControl {
        }
        return true;
    }
+
+   //Falta implementar Dijsktra
+
+    public boolean earierSolutionActiveButton(){
+        Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex()).getContent();
+        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex()).getContent();
+        easierSolutionDijkstra(waterSource,drain);
+        return false;
+    }
+
+    public  int easierSolutionDijkstra(Vertex<Box> source, Vertex<Box> drain) {
+        Map<Vertex<Box>, Integer> distance = new HashMap<>();
+        PriorityQueue<Vertex<Box>> minHeap = new PriorityQueue<>(Comparator.comparingInt(distance::get));
+
+        distance.put(source, 0);
+        minHeap.add(source);
+
+        while (!minHeap.isEmpty()) {
+            Vertex<Box> currentVertex = minHeap.poll();
+
+            for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
+                int newDistance = distance.get(currentVertex) + getEdgeWeight(currentVertex, neighbor);
+
+                if (!validateEdge(currentVertex, neighbor) || !isValidPipeType(currentVertex, neighbor)) {
+                    continue; // Aplica tus restricciones aquí
+                }
+
+                if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
+                    distance.put(neighbor, newDistance);
+                    minHeap.add(neighbor);
+                }
+            }
+        }
+
+        return distance.getOrDefault(drain, -1);
+    }
+
+    private static int getEdgeWeight(Vertex<Box> current, Vertex<Box> neighbor) {
+        // Puedes ajustar el peso de las aristas según tus necesidades
+        return 1;
+    }
+
+    private static boolean validateEdge(Vertex<Box> current, Vertex<Box> neighbor) {
+        // Puedes agregar más lógica de validación de aristas aquí si es necesario
+        return true;
+    }
+
+    private static boolean isValidPipeType(Vertex<Box> current, Vertex<Box> neighbor) {
+        Box currentBox = current.getContent();
+        Box neighborBox = neighbor.getContent();
+
+        if (currentBox != null && neighborBox != null &&
+                currentBox.getContent() instanceof Pipe && neighborBox.getContent() instanceof Pipe) {
+            PipeType currentPipeType = ((Pipe) currentBox.getContent()).getPipeType();
+            PipeType neighborPipeType = ((Pipe) neighborBox.getContent()).getPipeType();
+
+            // Agrega tus restricciones de tipo de tubería aquí
+            if (currentPipeType == PipeType.CIRCULAR || neighborPipeType == PipeType.CIRCULAR) {
+                return false;
+            }
+
+            // Puedes agregar más restricciones si es necesario
+
+        }
+        return true;
+    }
+
+
+
+    public void deleteGraph(){// falta hacer lo de que en exit llame a este metodo
+
+    }
 
     public int coordinadeToIdex(int x, int y){
         return x*8+y;

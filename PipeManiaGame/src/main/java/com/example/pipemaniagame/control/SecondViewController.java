@@ -33,6 +33,8 @@ public class SecondViewController implements Initializable {
 
     @FXML
     private Button ponerTuberiaButton;
+
+
     @FXML
     private Button goBack;
 
@@ -90,6 +92,11 @@ public class SecondViewController implements Initializable {
             alert.setContentText("Perdiste horrible Payasota");
             alert.showAndWait();
         }
+    }
+
+    @FXML
+    private void solutionButtonAction(){
+        gameController.earierSolutionActiveButton();
     }
 
     @FXML

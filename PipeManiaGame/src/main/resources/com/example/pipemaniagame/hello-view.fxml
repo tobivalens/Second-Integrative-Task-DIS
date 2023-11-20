@@ -15,6 +15,7 @@
             <Canvas fx:id="canvas" focusTraversable="true" height="600" width="800">
             </Canvas>
             <Button fx:id="startButton" layoutX="310.0" layoutY="522.0" onAction="#onHelloButtonClick" prefHeight="50" prefWidth="180" AnchorPane.leftAnchor="310.0" AnchorPane.topAnchor="522.0" />
+         <Button layoutX="193.0" layoutY="535.0" mnemonicParsing="false" text="Button" />
         </AnchorPane>
     </children>
 </VBox>
