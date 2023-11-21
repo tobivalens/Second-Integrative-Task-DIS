@@ -342,7 +342,6 @@ public class BaseControl {
         }
     }
 
-
     public List<Vertex<Box>> easierSolutionDijkstra(Vertex<Box> source, Vertex<Box> drain) {
         Map<Vertex<Box>, Integer> distance = new HashMap<>();
         Map<Vertex<Box>, Vertex<Box>> predecessor = new HashMap<>();
@@ -353,22 +352,88 @@ public class BaseControl {
 
         while (!minHeap.isEmpty()) {
             Vertex<Box> currentVertex = minHeap.poll();
-            for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
-                int newDistance = distance.get(currentVertex) +1;
 
-                if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
-                   // if (cumpleRestricciones(currentVertex, neighbor)) {
+            for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
+                int newDistance = distance.get(currentVertex) + 1;
+
+                // Agrega la verificación de restricciones
+                if (cumpleRestricciones(currentVertex, getTopNeighbor(currentVertex), getBottomNeighbor(currentVertex), reconstructPath(source, drain, predecessor))) {
+                    if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
                         distance.put(neighbor, newDistance);
                         predecessor.put(neighbor, currentVertex);
                         minHeap.add(neighbor);
-                    //}
+                    }
                 }
             }
-            System.out.println("Entro");
         }
 
         return reconstructPath(source, drain, predecessor);
     }
+
+
+    private Vertex<Box> getTopNeighbor(Vertex<Box> current) {
+        int c= adjacencyGraph.getAdjacencyList().indexOf(current);
+        if(c>7){
+            return adjacencyGraph.getAdjacencyList().get(c-8);
+        }
+        return null;
+    }
+
+    private Vertex<Box> getBottomNeighbor(Vertex<Box> current) {
+        int c= adjacencyGraph.getAdjacencyList().indexOf(current);
+        if(c<56){
+            return adjacencyGraph.getAdjacencyList().get(c+8);
+
+        }return null;
+    }
+
+    private boolean cumpleRestricciones(Vertex<Box> current, Vertex<Box> topNeighbor, Vertex<Box> bottomNeighbor, List<Vertex<Box>> shortestPath) {
+        int currentIdx = adjacencyGraph.getAdjacencyList().indexOf(current);
+        int topNeighborIdx = adjacencyGraph.getAdjacencyList().indexOf(topNeighbor);
+        int bottomNeighborIdx = adjacencyGraph.getAdjacencyList().indexOf(bottomNeighbor);
+
+        boolean topNeighborInPath = shortestPath.contains(topNeighbor);
+
+        boolean bottomNeighborInPath = shortestPath.contains(bottomNeighbor);
+
+        boolean leftNeighborInPath = false;
+        boolean rightNeighborInPath = false;
+
+        boolean leftLeftNeighborInPath = false;
+        boolean rightRightNeighborInPath = false;
+
+        int currentRow = currentIdx / 8;
+        int currentCol = currentIdx % 8;
+
+        int leftNeighborIdx = currentRow * 8 + (currentCol - 1);
+        int rightNeighborIdx = currentRow * 8 + (currentCol + 1);
+
+        int leftLeftNeighborIdx = currentRow * 8 + (currentCol - 1)-1;
+        int rightRightNeighborIdx = currentRow * 8 + (currentCol + 1)+1;
+
+        if (leftNeighborIdx >= 0 && leftNeighborIdx < 64 && leftLeftNeighborIdx >= 0 && leftLeftNeighborIdx < 64) {
+            Vertex<Box> leftNeighbor = adjacencyGraph.getAdjacencyList().get(leftNeighborIdx);
+            leftNeighborInPath = shortestPath.contains(leftNeighbor);
+
+            Vertex<Box> leftLeftNeighbor = adjacencyGraph.getAdjacencyList().get(leftLeftNeighborIdx);
+            leftLeftNeighborInPath = shortestPath.contains(leftLeftNeighbor);
+        }
+
+        if (rightNeighborIdx >= 0 && rightNeighborIdx < 64&&rightRightNeighborIdx >= 0 && rightRightNeighborIdx < 64) {
+            Vertex<Box> rightNeighbor = adjacencyGraph.getAdjacencyList().get(rightNeighborIdx);
+            rightNeighborInPath = shortestPath.contains(rightNeighbor);
+
+            Vertex<Box> rightRightN = adjacencyGraph.getAdjacencyList().get(rightRightNeighborIdx);
+            rightRightNeighborInPath = shortestPath.contains(rightRightN);
+        }
+
+
+        return !(topNeighborInPath || bottomNeighborInPath) || (rightNeighborInPath&& rightRightNeighborInPath)||(leftLeftNeighborInPath&&leftNeighborInPath);
+    }
+
+
+
+
 
     private static List<Vertex<Box>> reconstructPath(Vertex<Box> source, Vertex<Box> drain, Map<Vertex<Box>, Vertex<Box>> predecessor) {
         List<Vertex<Box>> path = new ArrayList<>();
@@ -391,6 +456,48 @@ public class BaseControl {
 
         return path;
     }
+
+    private boolean cumpleRestricciones(Vertex<Box> current, Vertex<Box> neighbor) {
+        int sourceIndex = adjacencyGraph.getAdjacencyList().indexOf(current);
+        int neighborIndex = adjacencyGraph.getAdjacencyList().indexOf(neighbor);
+
+        int sourceRow = sourceIndex / 8;
+        int sourceCol = sourceIndex % 8;
+        int neighborRow = neighborIndex / 8;
+        int neighborCol = neighborIndex % 8;
+
+        // Verificar si el vecino está a la derecha del nodo actual
+        if (sourceCol + 1 == neighborCol) {
+            // Verificar si hay nodos arriba o abajo del vecino
+            for (Vertex<Box> adjNeighbor : neighbor.getAdjacencyListVertex()) {
+                int adjNeighborIndex = adjacencyGraph.getAdjacencyList().indexOf(adjNeighbor);
+                int adjNeighborRow = adjNeighborIndex / 8;
+                int adjNeighborCol = adjNeighborIndex % 8;
+
+                // Verificar si hay nodos arriba o abajo del vecino
+                if (adjNeighborCol == neighborCol && (adjNeighborRow == neighborRow - 1 || adjNeighborRow == neighborRow + 1)) {
+                    return false;
+                }
+            }
+        }
+        // Verificar si el vecino está a la izquierda del nodo actual
+        else if (sourceCol - 1 == neighborCol) {
+            // Verificar si hay nodos arriba o abajo del vecino
+            for (Vertex<Box> adjNeighbor : neighbor.getAdjacencyListVertex()) {
+                int adjNeighborIndex = adjacencyGraph.getAdjacencyList().indexOf(adjNeighbor);
+                int adjNeighborRow = adjNeighborIndex / 8;
+                int adjNeighborCol = adjNeighborIndex % 8;
+
+                // Verificar si hay nodos arriba o abajo del vecino
+                if (adjNeighborCol == neighborCol && (adjNeighborRow == neighborRow - 1 || adjNeighborRow == neighborRow + 1)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
 
 
 
