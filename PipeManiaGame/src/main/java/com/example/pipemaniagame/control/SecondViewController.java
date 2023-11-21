@@ -97,6 +97,7 @@ public class SecondViewController implements Initializable {
     @FXML
     private void solutionButtonAction(){
         gameController.earierSolutionActiveButton();
+        System.out.println("Se activo el boton");
     }
 
     @FXML

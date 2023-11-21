@@ -12,12 +12,24 @@ public class Box {
     GraphicsContext graphicsContext;
     Pipe content;
 
+    public boolean isShortActivate() {
+        return shortActivate;
+    }
+
+    public void setShortActivate(boolean shortActivate) {
+        this.shortActivate = shortActivate;
+    }
+
+    boolean shortActivate;
+
     private static Image fount;
     private static Image drain;
     private static Image normal;
     private static Image vertical;
     private static Image horizontal;
     private static Image circular;
+
+    private static Image shortWay;
 
     static {
         try {
@@ -30,6 +42,9 @@ public class Box {
             horizontal = new Image(Box.class.getResourceAsStream("/images/4.png"), 40, 40, true, true);
             circular = new Image(Box.class.getResourceAsStream("/images/1.png"), 40, 40, true, true);
 
+            shortWay = new Image(Box.class.getResourceAsStream("/images/1.png"), 40, 40, true, true);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,6 +55,7 @@ public class Box {
         this.canva=canva;
         this.graphicsContext = this.canva.getGraphicsContext2D();
         this.content= content;
+        this.shortActivate=false;
     }
     public Pipe getContent() {
         return content;
@@ -63,7 +79,10 @@ public class Box {
                 drawImage(x, y, "/images/2.png");
             } else if (pipeType == PipeType.CIRCULAR) {
                 drawImage(x, y, "/images/3.png");
-            } else {
+            } else if(shortActivate) {
+               drawImage(x,y,"/images/pista.png");
+            }
+            else{
                 drawImage(x, y, "/images/1.png");
             }
         }

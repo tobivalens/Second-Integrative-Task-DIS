@@ -234,8 +234,6 @@ public class MatrixGameController {
             if (c.getContent().getContent() instanceof Pipe) {
                 PipeType p = c.getContent().getContent().getPipeType();
                 if (p == PipeType.CIRCULAR) {
-                    // Remueve las conexiones circulares del agua fuente
-                    // Esto puede variar dependiendo de tu implementación exacta de la matriz de adyacencia
                     matrixGraph.getMatrixAdj()[getWatersourceIndex()][i] = 0;
                     matrixGraph.getMatrixAdj()[i][getWatersourceIndex()] = 0;
                 }

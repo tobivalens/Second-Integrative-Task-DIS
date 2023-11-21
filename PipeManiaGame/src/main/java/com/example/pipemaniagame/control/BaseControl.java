@@ -13,7 +13,7 @@ public class BaseControl {
     private Canvas canvas;
     private GraphicsContext graphicsContext;
 
-    private AdjacencyListGraph<Vertex> adjacencyGraph;
+    private AdjacencyListGraph<Box> adjacencyGraph;
 
     private int pipesUsed;
     private long score;
@@ -100,44 +100,44 @@ public class BaseControl {
                 int drain = setRandomNodeDrain();
                 drainRow = drain / 8;
                 drainCol = drain % 8;
-            } while (Math.abs(sourceRow - drainRow) < 2 || Math.abs(sourceCol - drainCol) < 2);
+            } while (Math.abs(sourceRow - drainRow) < 3 || Math.abs(sourceCol - drainCol) < 3);
             int source= coordinadeToIdex(sourceRow,sourceCol);
             int drain= coordinadeToIdex(drainRow,drainCol);
 
             for (int i = 0; i < 64; i++) {
                 if (i == source) {
-                    adjacencyGraph.addVertex(new Vertex<>(new Box(new Pipe(PipeType.WATERSOURCE), canvas),new ArrayList<>()));
+                    adjacencyGraph.addVertex(new Box(new Pipe(PipeType.WATERSOURCE),canvas));
                     setWatersourceIndex(i);
                 } else if (i == drain) {
-                    adjacencyGraph.addVertex(new Vertex<>(new Box(new Pipe(PipeType.DRAIN), canvas),new ArrayList<>()));
+                    adjacencyGraph.addVertex((new Box(new Pipe(PipeType.DRAIN), canvas)));
                     setDrainIndex(i);
                 } else {
-                    adjacencyGraph.addVertex(new Vertex<>(new Box(null, canvas), new ArrayList<>()));
+                    adjacencyGraph.addVertex((new Box(null, canvas)));
                 }
             }
 
             for (int j = 0; j < adjacencyGraph.getAdjacencyList().size(); j++) {
-                Vertex<Box> vertex1 = adjacencyGraph.getAdjacencyList().get(j).getContent();
+                Vertex<Box> vertex1 = adjacencyGraph.getAdjacencyList().get(j);
                 int row = j / 8;
                 int col = j % 8;
 
                 if (col < 7) {
-                    Vertex<Box> vertexDer = adjacencyGraph.getAdjacencyList().get(j + 1).getContent();
+                    Vertex<Box> vertexDer = adjacencyGraph.getAdjacencyList().get(j + 1);
                     vertex1.getAdjacencyListVertex().add(vertexDer);
                     counter++;
                 }
                 if (col > 0) {
-                    Vertex<Box> vertexIzq = adjacencyGraph.getAdjacencyList().get(j - 1).getContent();
+                    Vertex<Box> vertexIzq = adjacencyGraph.getAdjacencyList().get(j - 1);
                     vertex1.getAdjacencyListVertex().add(vertexIzq);
                     counter++;
                 }
                 if (row < 7) {
-                    Vertex<Box> vertexDown = adjacencyGraph.getAdjacencyList().get(j + 8).getContent();
+                    Vertex<Box> vertexDown = adjacencyGraph.getAdjacencyList().get(j + 8);
                     vertex1.getAdjacencyListVertex().add(vertexDown);
                     counter++;
                 }
                 if (row > 0) {
-                    Vertex<Box> vertexUp = adjacencyGraph.getAdjacencyList().get(j - 8).getContent();
+                    Vertex<Box> vertexUp = adjacencyGraph.getAdjacencyList().get(j - 8);
                     vertex1.getAdjacencyListVertex().add(vertexUp);
                     counter++;
                 }
@@ -162,7 +162,7 @@ public class BaseControl {
                 int x = col * cellSize;
                 int y = row * cellSize;
 
-                Vertex vertex = adjacencyGraph.getAdjacencyList().get(row * numCols + col).getContent();
+                Vertex vertex = adjacencyGraph.getAdjacencyList().get(row * numCols + col);
                 Box box = (Box)vertex.getContent();
                 if (box != null) {
                     box.paint(x, y, cellSize, box);
@@ -189,7 +189,7 @@ public class BaseControl {
 
         for (int i = 0; i < adjacencyGraph.getAdjacencyList().size(); i++) {
             if (i == coordinate) {
-                Box b = (Box) adjacencyGraph.getAdjacencyList().get(i).getContent().getContent();
+                Box b = (Box) adjacencyGraph.getAdjacencyList().get(i).getContent();
                 if (b.getContent() != null && b.getContent().getPipeType().equals(PipeType.WATERSOURCE)) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Alert");
@@ -211,8 +211,8 @@ public class BaseControl {
     }
 
     public boolean simulate(){
-        Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex()).getContent();
-        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex()).getContent();
+        Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex());
+        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex());
 
         for(int i=0; i< waterSource.getAdjacencyListVertex().size();i++){
             Vertex<Box> c= (Vertex<Box>) waterSource.getAdjacencyListVertex().get(i);
@@ -280,7 +280,7 @@ public class BaseControl {
     }
 
     public boolean validateDrain(){
-        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex()).getContent();
+        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex());
         for(int i=0; i< drain.getAdjacencyListVertex().size();i++){
             Vertex<Box> c= (Vertex<Box>) drain.getAdjacencyListVertex().get(i);
             if(c.getContent().getContent() instanceof  Pipe){
@@ -322,14 +322,30 @@ public class BaseControl {
    //Falta implementar Dijsktra
 
     public boolean earierSolutionActiveButton(){
-        Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex()).getContent();
-        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex()).getContent();
-        easierSolutionDijkstra(waterSource,drain);
+        Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex());
+        Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex());
+        showShorterSolution(waterSource,drain);
         return false;
     }
 
-    public  int easierSolutionDijkstra(Vertex<Box> source, Vertex<Box> drain) {
+    public void showShorterSolution(Vertex<Box> source, Vertex<Box> drain) {
+        List<Vertex<Box>> shortestPath = easierSolutionDijkstra(source, drain);
+
+        for (Vertex<Box> pathVertex : shortestPath) {
+            for (Vertex<Box> graphVertex : adjacencyGraph.getAdjacencyList()) {
+                if (pathVertex == graphVertex) {
+                    Box box = (Box) graphVertex.getContent();
+                    box.setShortActivate(true);
+                    System.out.println("si la di ois");
+                }
+            }
+        }
+    }
+
+
+    public List<Vertex<Box>> easierSolutionDijkstra(Vertex<Box> source, Vertex<Box> drain) {
         Map<Vertex<Box>, Integer> distance = new HashMap<>();
+        Map<Vertex<Box>, Vertex<Box>> predecessor = new HashMap<>();
         PriorityQueue<Vertex<Box>> minHeap = new PriorityQueue<>(Comparator.comparingInt(distance::get));
 
         distance.put(source, 0);
@@ -337,49 +353,49 @@ public class BaseControl {
 
         while (!minHeap.isEmpty()) {
             Vertex<Box> currentVertex = minHeap.poll();
-
             for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
                 int newDistance = distance.get(currentVertex) +1;
 
-                if ( !isValidPipeType(currentVertex, neighbor)) {
-                    continue; // Aplica tus restricciones aquí
-                }
-
                 if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
-                    distance.put(neighbor, newDistance);
-                    minHeap.add(neighbor);
+                   // if (cumpleRestricciones(currentVertex, neighbor)) {
+                        distance.put(neighbor, newDistance);
+                        predecessor.put(neighbor, currentVertex);
+                        minHeap.add(neighbor);
+                    //}
                 }
             }
+            System.out.println("Entro");
         }
 
-        return distance.getOrDefault(drain, -1);
+        return reconstructPath(source, drain, predecessor);
+    }
+
+    private static List<Vertex<Box>> reconstructPath(Vertex<Box> source, Vertex<Box> drain, Map<Vertex<Box>, Vertex<Box>> predecessor) {
+        List<Vertex<Box>> path = new ArrayList<>();
+        Vertex<Box> current = drain;
+
+        while (current != null && current != source) {
+            path.add(current);
+            current = predecessor.get(current);
+        }
+
+        if (current == source) {
+            path.add(source);
+            Collections.reverse(path);
+        } else {
+            path.clear();
+        }
+        if(!path.isEmpty()){
+            System.out.println("no esa vacia");
+        }
+
+        return path;
     }
 
 
 
-    private static boolean isValidPipeType(Vertex<Box> current, Vertex<Box> neighbor) {
-        Box currentBox = current.getContent();
-        Box neighborBox = neighbor.getContent();
-
-        if (currentBox != null && neighborBox != null &&
-                currentBox.getContent() instanceof Pipe && neighborBox.getContent() instanceof Pipe) {
-            PipeType currentPipeType = ((Pipe) currentBox.getContent()).getPipeType();
-            PipeType neighborPipeType = ((Pipe) neighborBox.getContent()).getPipeType();
-
-            if (currentPipeType == PipeType.CIRCULAR && neighborPipeType == PipeType.CIRCULAR) {
-                return false;
-            }
-            if(currentPipeType== PipeType.VERTICAL && neighborPipeType==PipeType.HORIZONTAL){
-                return false;
-            }
-            if(currentPipeType== PipeType.HORIZONTAL && neighborPipeType==PipeType.VERTICAL){
-                return false;
-            }
 
 
-        }
-        return true;
-    }
 
     public void deleteGraph(){// falta hacer lo de que en exit llame a este metodo
 
