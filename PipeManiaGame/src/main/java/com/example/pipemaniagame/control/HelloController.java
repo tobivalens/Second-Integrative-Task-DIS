@@ -13,12 +13,22 @@ public class HelloController {
     @FXML
     private Canvas canvas;
 
+    @FXML
+    private Button matrixButton;
+
     private GraphicsContext graphicsContext;
 
     @FXML
     private Button startButton;
 
     private Image backgroundImage;
+
+    @FXML
+    protected void onMatrixButtonClick() {
+        HelloApplication.openWindow("matrix-view.fxml");
+        Stage stage = (Stage) matrixButton.getScene().getWindow();
+        stage.close();
+    }
 
     @FXML
     protected void onHelloButtonClick() {

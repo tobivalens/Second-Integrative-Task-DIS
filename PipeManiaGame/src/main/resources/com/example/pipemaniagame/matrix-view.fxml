@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.pipemaniagame.control.GameController"
+            prefHeight="400.0" prefWidth="600.0">
+
+
+    <HBox layoutY="548.0" prefHeight="52.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="548.0">
+        <children>
+            <VBox alignment="CENTER_RIGHT" />
+        </children>
+    </HBox>
+    <TextField fx:id="textRow" layoutX="613.0" layoutY="208.0" prefHeight="25.0" prefWidth="145.0" />
+    <TextField fx:id="textColumn" layoutX="611.0" layoutY="269.0" prefHeight="25.0" prefWidth="145.0" />
+    <Canvas fx:id="gameCanvas" height="512.0" layoutX="58.0" layoutY="62.0" width="557.0" />
+    <Label fx:id="rowLabel" layoutX="672.0" layoutY="178.0" text="Row">
+        <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+        </font></Label>
+    <Label fx:id="columnLabel" layoutX="666.0" layoutY="241.0" text="Column">
+        <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+        </font></Label>
+    <Button fx:id="solutionButton" layoutX="623.0" layoutY="512.0" mnemonicParsing="false" onAction="#solutionButtonAction" />
+    <Button fx:id="ponerTuberiaButton" layoutX="621.0" layoutY="394.0" mnemonicParsing="false" onAction="#handlePonerTuberia" prefHeight="25.0" prefWidth="88.0" />
+    <Button fx:id="simulate" layoutX="623.0" layoutY="454.0" mnemonicParsing="false" onAction="#handleSimular" />
+    <Button fx:id="goBack" layoutX="650.0" layoutY="28.0" mnemonicParsing="false" onAction="#goBack" prefHeight="40.0" prefWidth="94.0" />
+    <Label layoutX="665.0" layoutY="85.0" text="Score">
+        <font>
+            <Font name="Bernard MT Condensed" size="18.0" />
+        </font></Label>
+    <Label fx:id="puntaje" layoutX="683.0" layoutY="129.0" text="x">
+        <font>
+            <Font name="Bernard MT Condensed" size="18.0" />
+        </font></Label>
+    <Label layoutX="660.0" layoutY="310.0" text="Pipe Type">
+        <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+        </font></Label>
+    <TextField fx:id="textPipeType" layoutX="610.0" layoutY="347.0" />
+
+</AnchorPane>

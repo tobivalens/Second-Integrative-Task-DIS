@@ -34,11 +34,8 @@ public class MatrixGraph<T> {
         return false;
     }
 
-    public boolean addEdge(Vertex<T>v1, Vertex<T>v2){
-        int indexV1= returnIndex(v1);
-        int indexV2= returnIndex(v2);
-        matrixAdj[indexV1][indexV2]= 1;
-        matrixAdj[indexV2][indexV1]= 1;
+    public boolean addEdge(int i, int j){
+        matrixAdj[i][j]= 1;
         return true;
     }
 
@@ -49,6 +46,14 @@ public class MatrixGraph<T> {
             }
         }
         return -1;
+    }
+
+    public Vertex<T> indexVertex(int i){
+        if(!vertexList.isEmpty()&&vertexList.get(i)!=null){
+            return vertexList.get(i);
+
+        }
+        return null;
     }
 
     public Vertex<T> serchVertex(T content){

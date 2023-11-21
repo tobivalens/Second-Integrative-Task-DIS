@@ -224,8 +224,6 @@ public class BaseControl {
             }
         }
 
-
-
         if( simulateBFS(waterSource,drain)){
             return true;
         }
@@ -341,9 +339,9 @@ public class BaseControl {
             Vertex<Box> currentVertex = minHeap.poll();
 
             for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
-                int newDistance = distance.get(currentVertex) + getEdgeWeight(currentVertex, neighbor);
+                int newDistance = distance.get(currentVertex) +1;
 
-                if (!validateEdge(currentVertex, neighbor) || !isValidPipeType(currentVertex, neighbor)) {
+                if ( !isValidPipeType(currentVertex, neighbor)) {
                     continue; // Aplica tus restricciones aquí
                 }
 
@@ -357,15 +355,7 @@ public class BaseControl {
         return distance.getOrDefault(drain, -1);
     }
 
-    private static int getEdgeWeight(Vertex<Box> current, Vertex<Box> neighbor) {
-        // Puedes ajustar el peso de las aristas según tus necesidades
-        return 1;
-    }
 
-    private static boolean validateEdge(Vertex<Box> current, Vertex<Box> neighbor) {
-        // Puedes agregar más lógica de validación de aristas aquí si es necesario
-        return true;
-    }
 
     private static boolean isValidPipeType(Vertex<Box> current, Vertex<Box> neighbor) {
         Box currentBox = current.getContent();
@@ -376,18 +366,20 @@ public class BaseControl {
             PipeType currentPipeType = ((Pipe) currentBox.getContent()).getPipeType();
             PipeType neighborPipeType = ((Pipe) neighborBox.getContent()).getPipeType();
 
-            // Agrega tus restricciones de tipo de tubería aquí
-            if (currentPipeType == PipeType.CIRCULAR || neighborPipeType == PipeType.CIRCULAR) {
+            if (currentPipeType == PipeType.CIRCULAR && neighborPipeType == PipeType.CIRCULAR) {
+                return false;
+            }
+            if(currentPipeType== PipeType.VERTICAL && neighborPipeType==PipeType.HORIZONTAL){
+                return false;
+            }
+            if(currentPipeType== PipeType.HORIZONTAL && neighborPipeType==PipeType.VERTICAL){
                 return false;
             }
 
-            // Puedes agregar más restricciones si es necesario
 
         }
         return true;
     }
-
-
 
     public void deleteGraph(){// falta hacer lo de que en exit llame a este metodo
 
