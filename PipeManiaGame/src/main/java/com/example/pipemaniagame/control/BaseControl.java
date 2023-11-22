@@ -356,8 +356,7 @@ public class BaseControl {
             for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
                 int newDistance = distance.get(currentVertex) + 1;
 
-                // Agrega la verificación de restricciones
-                if (cumpleRestricciones(currentVertex, getTopNeighbor(currentVertex), getBottomNeighbor(currentVertex), reconstructPath(source, drain, predecessor))) {
+                if (cumpleRestricciones(currentVertex,neighbor, reconstructPath(source, drain, predecessor))) {
                     if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
                         distance.put(neighbor, newDistance);
                         predecessor.put(neighbor, currentVertex);
@@ -387,52 +386,24 @@ public class BaseControl {
         }return null;
     }
 
-    private boolean cumpleRestricciones(Vertex<Box> current, Vertex<Box> topNeighbor, Vertex<Box> bottomNeighbor, List<Vertex<Box>> shortestPath) {
-        int currentIdx = adjacencyGraph.getAdjacencyList().indexOf(current);
-        int topNeighborIdx = adjacencyGraph.getAdjacencyList().indexOf(topNeighbor);
-        int bottomNeighborIdx = adjacencyGraph.getAdjacencyList().indexOf(bottomNeighbor);
+    private boolean cumpleRestricciones(Vertex<Box> actual, Vertex<Box> vecino, List<Vertex<Box>> caminoMasCorto) {
+        if (actual.getContent().getContent() instanceof Pipe && vecino.getContent().getContent() instanceof Pipe) {
+            PipeType tipoTuberiaActual = ((Pipe) actual.getContent().getContent()).getPipeType();
+            PipeType tipoTuberiaVecino = ((Pipe) vecino.getContent().getContent()).getPipeType();
 
-        boolean topNeighborInPath = shortestPath.contains(topNeighbor);
-
-        boolean bottomNeighborInPath = shortestPath.contains(bottomNeighbor);
-
-        boolean leftNeighborInPath = false;
-        boolean rightNeighborInPath = false;
-
-        boolean leftLeftNeighborInPath = false;
-        boolean rightRightNeighborInPath = false;
-
-        int currentRow = currentIdx / 8;
-        int currentCol = currentIdx % 8;
-
-        int leftNeighborIdx = currentRow * 8 + (currentCol - 1);
-        int rightNeighborIdx = currentRow * 8 + (currentCol + 1);
-
-        int leftLeftNeighborIdx = currentRow * 8 + (currentCol - 1)-1;
-        int rightRightNeighborIdx = currentRow * 8 + (currentCol + 1)+1;
-
-        if (leftNeighborIdx >= 0 && leftNeighborIdx < 64 && leftLeftNeighborIdx >= 0 && leftLeftNeighborIdx < 64) {
-            Vertex<Box> leftNeighbor = adjacencyGraph.getAdjacencyList().get(leftNeighborIdx);
-            leftNeighborInPath = shortestPath.contains(leftNeighbor);
-
-            Vertex<Box> leftLeftNeighbor = adjacencyGraph.getAdjacencyList().get(leftLeftNeighborIdx);
-            leftLeftNeighborInPath = shortestPath.contains(leftLeftNeighbor);
+            // Verificar si la conexión es válida según los tipos de tuberías
+            if ((tipoTuberiaActual == PipeType.VERTICAL && tipoTuberiaVecino == PipeType.VERTICAL) ||
+                    (tipoTuberiaActual == PipeType.HORIZONTAL && tipoTuberiaVecino == PipeType.HORIZONTAL) ||
+                    (tipoTuberiaActual == PipeType.CIRCULAR && tipoTuberiaVecino == PipeType.CIRCULAR)) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
-        if (rightNeighborIdx >= 0 && rightNeighborIdx < 64&&rightRightNeighborIdx >= 0 && rightRightNeighborIdx < 64) {
-            Vertex<Box> rightNeighbor = adjacencyGraph.getAdjacencyList().get(rightNeighborIdx);
-            rightNeighborInPath = shortestPath.contains(rightNeighbor);
-
-            Vertex<Box> rightRightN = adjacencyGraph.getAdjacencyList().get(rightRightNeighborIdx);
-            rightRightNeighborInPath = shortestPath.contains(rightRightN);
-        }
-
-
-        return !(topNeighborInPath || bottomNeighborInPath) || (rightNeighborInPath&& rightRightNeighborInPath)||(leftLeftNeighborInPath&&leftNeighborInPath);
+        // No hay restricciones para celdas sin tubería
+        return true;
     }
-
-
-
 
 
     private static List<Vertex<Box>> reconstructPath(Vertex<Box> source, Vertex<Box> drain, Map<Vertex<Box>, Vertex<Box>> predecessor) {
@@ -456,49 +427,6 @@ public class BaseControl {
 
         return path;
     }
-
-    private boolean cumpleRestricciones(Vertex<Box> current, Vertex<Box> neighbor) {
-        int sourceIndex = adjacencyGraph.getAdjacencyList().indexOf(current);
-        int neighborIndex = adjacencyGraph.getAdjacencyList().indexOf(neighbor);
-
-        int sourceRow = sourceIndex / 8;
-        int sourceCol = sourceIndex % 8;
-        int neighborRow = neighborIndex / 8;
-        int neighborCol = neighborIndex % 8;
-
-        // Verificar si el vecino está a la derecha del nodo actual
-        if (sourceCol + 1 == neighborCol) {
-            // Verificar si hay nodos arriba o abajo del vecino
-            for (Vertex<Box> adjNeighbor : neighbor.getAdjacencyListVertex()) {
-                int adjNeighborIndex = adjacencyGraph.getAdjacencyList().indexOf(adjNeighbor);
-                int adjNeighborRow = adjNeighborIndex / 8;
-                int adjNeighborCol = adjNeighborIndex % 8;
-
-                // Verificar si hay nodos arriba o abajo del vecino
-                if (adjNeighborCol == neighborCol && (adjNeighborRow == neighborRow - 1 || adjNeighborRow == neighborRow + 1)) {
-                    return false;
-                }
-            }
-        }
-        // Verificar si el vecino está a la izquierda del nodo actual
-        else if (sourceCol - 1 == neighborCol) {
-            // Verificar si hay nodos arriba o abajo del vecino
-            for (Vertex<Box> adjNeighbor : neighbor.getAdjacencyListVertex()) {
-                int adjNeighborIndex = adjacencyGraph.getAdjacencyList().indexOf(adjNeighbor);
-                int adjNeighborRow = adjNeighborIndex / 8;
-                int adjNeighborCol = adjNeighborIndex % 8;
-
-                // Verificar si hay nodos arriba o abajo del vecino
-                if (adjNeighborCol == neighborCol && (adjNeighborRow == neighborRow - 1 || adjNeighborRow == neighborRow + 1)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-
 
 
 

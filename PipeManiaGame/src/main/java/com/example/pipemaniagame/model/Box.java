@@ -31,24 +31,6 @@ public class Box {
 
     private static Image shortWay;
 
-    static {
-        try {
-            fount = new Image(Box.class.getResourceAsStream("/images/5.png"), 40, 40, true, true);
-            drain = new Image(Box.class.getResourceAsStream("/images/6.png"), 40, 40, true, true);
-
-            normal = new Image(Box.class.getResourceAsStream("/images/3.png"), 40, 40, true, true);
-            vertical = new Image(Box.class.getResourceAsStream("/images/2.png"), 40, 40, true, true);
-
-            horizontal = new Image(Box.class.getResourceAsStream("/images/4.png"), 40, 40, true, true);
-            circular = new Image(Box.class.getResourceAsStream("/images/1.png"), 40, 40, true, true);
-
-            shortWay = new Image(Box.class.getResourceAsStream("/images/1.png"), 40, 40, true, true);
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public Box(Pipe content, Canvas canva){

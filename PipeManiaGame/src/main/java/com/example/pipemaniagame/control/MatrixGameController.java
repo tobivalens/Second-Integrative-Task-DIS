@@ -235,17 +235,15 @@ public class MatrixGameController {
                 PipeType p = c.getContent().getContent().getPipeType();
                 if (p == PipeType.CIRCULAR) {
                     matrixGraph.getMatrixAdj()[getWatersourceIndex()][i] = 0;
-                    matrixGraph.getMatrixAdj()[i][getWatersourceIndex()] = 0;
                 }
             }
         }
-
         if (simulateBFS(waterSource, drain)) {
+            System.out.println("entro al bfs");
             return true;
         }
         return false;
     }
-
     public boolean simulateBFS(Vertex<Box> fountVertex, Vertex<Box> drainVertex) {
         Queue<Vertex<Box>> queue = new LinkedList<>();
         Set<Vertex<Box>> visitedVertex = new HashSet<>();
@@ -257,34 +255,31 @@ public class MatrixGameController {
             Vertex<Box> currentVertex = queue.poll();
             Box currentBox = currentVertex.getContent();
 
-            if (currentBox.getContent() instanceof Pipe) {
+            if (currentBox != null && currentBox.getContent() instanceof Pipe) {
                 PipeType currentPipeType = currentBox.getContent().getPipeType();
 
                 if (validateDrain() && currentPipeType == PipeType.DRAIN) {
                     return true;
                 }
 
+                int currentVertexIndex = matrixGraph.returnIndex(currentVertex);
                 for (int i = 0; i < matrixGraph.getVertexList().size(); i++) {
-                    Vertex<Box> nextTo = matrixGraph.indexVertex(i);
+                    if (matrixGraph.getMatrixAdj()[currentVertexIndex][i] == 1) {
+                        Vertex<Box> nextTo = matrixGraph.indexVertex(i);
+                        if (nextTo != null && nextTo.getContent() != null && nextTo.getContent().getContent() != null) {
+                            PipeType pipeNextTo = nextTo.getContent().getContent().getPipeType();
 
-                    if (matrixGraph.getMatrixAdj()[getWatersourceIndex()][i] == 1 &&
-                            nextTo.getContent().getContent() != null) {
-
-                        PipeType pipeNextto = nextTo.getContent().getContent().getPipeType();
-                        if (pipeNextto == PipeType.VERTICAL) {
-                            if (validateVertical(nextTo) && !visitedVertex.contains(nextTo)) {
-                                queue.add(nextTo);
-                                visitedVertex.add(nextTo);
-                            }
-                        } else if (pipeNextto == PipeType.HORIZONTAL) {
-                            if (validateHorizontal(nextTo) && !visitedVertex.contains(nextTo)) {
-                                queue.add(nextTo);
-                                visitedVertex.add(nextTo);
-                            }
-                        } else {
                             if (!visitedVertex.contains(nextTo)) {
-                                queue.add(nextTo);
-                                visitedVertex.add(nextTo);
+                                if (pipeNextTo == PipeType.VERTICAL && validateVertical(nextTo)) {
+                                    queue.add(nextTo);
+                                    visitedVertex.add(nextTo);
+                                } else if (pipeNextTo == PipeType.HORIZONTAL && validateHorizontal(nextTo)) {
+                                    queue.add(nextTo);
+                                    visitedVertex.add(nextTo);
+                                } else if (pipeNextTo != PipeType.HORIZONTAL && pipeNextTo != PipeType.VERTICAL) {
+                                    queue.add(nextTo);
+                                    visitedVertex.add(nextTo);
+                                }
                             }
                         }
                     }
@@ -293,6 +288,7 @@ public class MatrixGameController {
         }
         return false;
     }
+
 
     public boolean validateDrain() {
         int drainIndex = getDrainIndex();
@@ -307,6 +303,30 @@ public class MatrixGameController {
                 }
             }
         }
+        if(drainIndex>0){
+            if (matrixGraph.getMatrixAdj()[drainIndex][drainIndex-1] == 1) {
+                Vertex<Box> c = matrixGraph.indexVertex(drainIndex-1);
+                if (c.getContent().getContent() instanceof Pipe) {
+                    PipeType p = c.getContent().getContent().getPipeType();
+                    if (p == PipeType.VERTICAL) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if(drainIndex<7){
+            if (matrixGraph.getMatrixAdj()[drainIndex][drainIndex+1] == 1) {
+                Vertex<Box> c = matrixGraph.indexVertex(drainIndex+1);
+                if (c.getContent().getContent() != null) {
+                    PipeType p = c.getContent().getContent().getPipeType();
+                    if (p == PipeType.VERTICAL) {
+                        return false;
+                    }
+                }
+            }
+        }
+
         return true;
     }
 
@@ -327,14 +347,13 @@ public class MatrixGameController {
     }
 
     public boolean validateHorizontal(Vertex value) {
-
         int valueIndex = matrixGraph.returnIndex(value);
         for (int i = 0; i < matrixGraph.getVertexList().size(); i++) {
             if (matrixGraph.getMatrixAdj()[valueIndex][i] == 1) {
                 Vertex<Box> c = matrixGraph.indexVertex(i);
                 if (c.getContent().getContent() != null) {
                     PipeType p = c.getContent().getContent().getPipeType();
-                    if (p == PipeType.VERTICAL) {
+                    if (p == PipeType.VERTICAL ) {
                         return false;
                     }
                 }
@@ -344,7 +363,7 @@ public class MatrixGameController {
     }
 
 
-// Resto del código
+
 
 
 }
