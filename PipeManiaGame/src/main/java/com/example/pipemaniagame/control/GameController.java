@@ -14,12 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {

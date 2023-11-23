@@ -22,15 +22,6 @@ public class Box {
 
     boolean shortActivate;
 
-    private static Image fount;
-    private static Image drain;
-    private static Image normal;
-    private static Image vertical;
-    private static Image horizontal;
-    private static Image circular;
-
-    private static Image shortWay;
-
 
 
     public Box(Pipe content, Canvas canva){
