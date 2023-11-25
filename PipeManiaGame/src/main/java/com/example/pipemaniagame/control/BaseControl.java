@@ -67,7 +67,6 @@ public class BaseControl {
 
 
     public void paint() {
-
         drawBoard();
     }
 
@@ -330,7 +329,6 @@ public class BaseControl {
 
     public void showShorterSolution(Vertex<Box> source, Vertex<Box> drain) {
         List<Vertex<Box>> shortestPath = easierSolutionDijkstra(source, drain);
-
         for (Vertex<Box> pathVertex : shortestPath) {
             for (Vertex<Box> graphVertex : adjacencyGraph.getAdjacencyList()) {
                 if (pathVertex == graphVertex) {

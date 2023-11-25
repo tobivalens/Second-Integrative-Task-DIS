@@ -149,8 +149,6 @@ public class SecondViewController implements Initializable {
         solutionButton.setStyle("-fx-padding: 0;");
         solutionButton.setGraphic(solutionImageView);
 
-
-
         new Thread(
                 () ->{
                     while (true){

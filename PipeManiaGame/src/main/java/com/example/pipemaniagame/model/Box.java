@@ -23,7 +23,6 @@ public class Box {
     boolean shortActivate;
 
 
-
     public Box(Pipe content, Canvas canva){
         this.canva=canva;
         this.graphicsContext = this.canva.getGraphicsContext2D();
@@ -37,40 +36,50 @@ public class Box {
         this.content = content;
     }
 
+
+    private static Image waterSourceImage = loadImage("/images/5.png");
+    private static Image drainImage = loadImage("/images/6.png");
+    private static Image horizontalImage = loadImage("/images/4.png");
+    private static Image verticalImage = loadImage("/images/2.png");
+    private static Image circularImage = loadImage("/images/3.png");
+    private static Image defaultImage = loadImage("/images/1.png");
+    private static Image shortActivateImage = loadImage("/images/pista.png");
+
+    private static Image loadImage(String imagePath) {
+        try (InputStream inputStream = Box.class.getResourceAsStream(imagePath)) {
+            return new Image(inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     public void paint(int x, int y, int size, Box box) {
         if (box != null) {
             PipeType pipeType = box.getContent() != null ? box.getContent().getPipeType() : null;
 
             if (pipeType == PipeType.WATERSOURCE) {
-                drawImage(x, y, "/images/5.png");
+                drawImage(x, y, waterSourceImage);
             } else if (pipeType == PipeType.DRAIN) {
-                drawImage(x, y, "/images/6.png");
+                drawImage(x, y, drainImage);
             } else if (pipeType == PipeType.HORIZONTAL) {
-                drawImage(x, y, "/images/4.png");
+                drawImage(x, y, horizontalImage);
             } else if (pipeType == PipeType.VERTICAL) {
-
-                drawImage(x, y, "/images/2.png");
+                drawImage(x, y, verticalImage);
             } else if (pipeType == PipeType.CIRCULAR) {
-                drawImage(x, y, "/images/3.png");
-            } else if(shortActivate) {
-               drawImage(x,y,"/images/pista.png");
-            }
-            else{
-                drawImage(x, y, "/images/1.png");
+                drawImage(x, y, circularImage);
+            } else if (shortActivate) {
+                drawImage(x, y, shortActivateImage);
+            } else {
+                drawImage(x, y, defaultImage);
             }
         }
     }
 
-    private void drawImage(int x, int y, String imagePath) {
-        try {
-            InputStream inputStream = getClass().getResourceAsStream(imagePath);
-            Image image = new Image(inputStream);
+    private void drawImage(int x, int y, Image image) {
+        if (image != null) {
             graphicsContext.drawImage(image, x, y);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
-
 
     @Override
     public String toString() {

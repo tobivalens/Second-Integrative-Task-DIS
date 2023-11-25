@@ -228,7 +228,7 @@ public class MatrixGameController {
     public boolean simulate() {
         Vertex<Box> waterSource = matrixGraph.indexVertex(getWatersourceIndex());
         Vertex<Box> drain = matrixGraph.indexVertex(getDrainIndex());
-
+/**
         for (int i = 0; i < matrixGraph.getVertexList().size(); i++) {
             Vertex<Box> c = matrixGraph.indexVertex(i);
             if (c.getContent().getContent() instanceof Pipe) {
@@ -237,7 +237,7 @@ public class MatrixGameController {
                     matrixGraph.getMatrixAdj()[getWatersourceIndex()][i] = 0;
                 }
             }
-        }
+        }*/
         if (simulateBFS(waterSource, drain)) {
             System.out.println("entro al bfs");
             return true;
@@ -298,7 +298,7 @@ public class MatrixGameController {
                 if (c.getContent().getContent() instanceof Pipe) {
                     PipeType p = c.getContent().getContent().getPipeType();
                     if (p == PipeType.CIRCULAR) {
-                        return false;
+                        return true;
                     }
                 }
             }
@@ -462,9 +462,5 @@ public class MatrixGameController {
 
         return path;
     }
-
-
-
-
 
 }
