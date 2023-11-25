@@ -42,7 +42,7 @@ public class HelloController {
 
     @FXML
     protected void onInstructionClick() {
-        HelloApplication.openWindow("second-view.fxml");
+        HelloApplication.openWindow("instruction-view.fxml");
         Stage stage = (Stage) startButton.getScene().getWindow();
         stage.close();
     }
