@@ -35,8 +35,10 @@ public class MatrixGraph<T> {
     }
 
     public boolean addEdge(int i, int j){
-        if(!vertexList.isEmpty()){
-            matrixAdj[i][j]= 1;  return true;
+
+        if(!vertexList.isEmpty()&& i>=0 &&j>=0){
+            matrixAdj[i][j]= 1;
+            return true;
         }
       return false;
     }

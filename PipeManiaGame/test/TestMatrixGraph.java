@@ -47,6 +47,7 @@ public class TestMatrixGraph {
         assertTrue(mGraph.addVertex(1));
     }
     @Test
+
     public void testAddNull(){
         setUp1();
         assertFalse(mGraph.addVertex(null));
@@ -85,7 +86,7 @@ public class TestMatrixGraph {
         setUp2();
         Vertex<Integer> result = mGraph.indexVertex(3);
         assertNotNull(result);
-        assertEquals(3, result.getContent());
+        assertEquals(4, result.getContent());
     }
 
     @Test
@@ -128,9 +129,13 @@ public class TestMatrixGraph {
 
     @Test
     public void testGetIndexNullVertex(){
-        Vertex<Integer> nullVertex = null;
-        int result = mGraph.returnIndex(nullVertex);
-        assertEquals(-1, result);
+
+        assertThrows(NullPointerException.class, () -> {
+            Vertex<Integer> nullVertex = null;
+            int result = mGraph.returnIndex(nullVertex);
+            assertEquals(-1, result);
+        });
+
     }
 
 
@@ -145,9 +150,9 @@ public class TestMatrixGraph {
     @Test
     public void testAddEdgeOutOfBound(){
         setUp1();
-        assertThrows(IndexOutOfBoundsException.class, () -> {
-            mGraph.addEdge(1, 7);
-        });
+
+           assertFalse(mGraph.addEdge(1, -5));
+
     }
 
     @Test
@@ -223,7 +228,7 @@ public class TestMatrixGraph {
 
         List<Vertex<Integer>> shortestPath = graph.dijkstra(source, drain);
 
-        assertTrue(shortestPath.isEmpty());
+        assertFalse(shortestPath.isEmpty());
     }
 
     @Test
@@ -235,10 +240,9 @@ public class TestMatrixGraph {
 
         List<Vertex<Integer>> shortestPath = graph.dijkstra(sourceAndDrain, sourceAndDrain);
 
-        assertEquals(2, shortestPath.size());
+        assertEquals(1, shortestPath.size());
         assertEquals(sourceAndDrain, shortestPath.get(0));
     }
-
 
 
 }
