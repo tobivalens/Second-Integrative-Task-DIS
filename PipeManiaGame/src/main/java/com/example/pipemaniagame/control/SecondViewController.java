@@ -55,24 +55,37 @@ public class SecondViewController implements Initializable {
     private Image backgroundImage;
 
     @FXML
-    private void handlePonerTuberia() {
+    private ChoiceBox<String> pipeSelection;
 
-        int x= Integer.parseInt(textRow.getText());
-        int y=  Integer.parseInt(textColumn.getText());
-        int pipe= Integer.parseInt(textPipeType.getText());
-        if(pipe <1 || pipe>3){
+    @FXML
+    private void handlePonerTuberia() {
+        try{
+            int x= Integer.parseInt(textRow.getText());
+            int y=  Integer.parseInt(textColumn.getText());
+            int pipe= handlePipeSelection();
+            if(pipe <1 || pipe>3){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setContentText("Insert a valid Pipe number");
+                alert.showAndWait();
+            }else if(x>7 || x<0 || y>7 ||y<0){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setContentText("Insert a valid number for row and column");
+                alert.showAndWait();
+
+            } else{
+                gameController.insertPipe(x,y,pipe);
+            }
+
+
+        }catch (NumberFormatException e){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");
-            alert.setContentText("Insert a valid Pipe number");
+            alert.setContentText("Invalid numbers for row and column");
             alert.showAndWait();
-        }else if(x>7 || x<0 || y>7 ||y<0){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Alert");
-            alert.setContentText("Insert a valid number for row and column");
-            alert.showAndWait();
-        } else{
-            gameController.insertPipe(x,y,pipe);
         }
+
 
     }
 
@@ -83,13 +96,17 @@ public class SecondViewController implements Initializable {
             puntaje.setText(String.valueOf(gameController.calculateScore()));
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");
-            alert.setContentText("La diste toda reina");
+            alert.setContentText("¡Your solution is correct!");
             alert.showAndWait();
+
+            HelloApplication.openWindow("hello-view.fxml");
+            Stage stage = (Stage) simulate.getScene().getWindow();
+            stage.close();
 
         }else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");
-            alert.setContentText("Perdiste horrible Payasota");
+            alert.setContentText("Your solution is Wrong, try again");
             alert.showAndWait();
         }
     }
@@ -97,7 +114,7 @@ public class SecondViewController implements Initializable {
     @FXML
     private void solutionButtonAction(){
         gameController.earierSolutionActiveButton();
-        System.out.println("Se activo el boton");
+
     }
 
     @FXML
@@ -105,6 +122,22 @@ public class SecondViewController implements Initializable {
             HelloApplication.openWindow("hello-view.fxml");
             Stage stage = (Stage) goBack.getScene().getWindow();
             stage.close();
+    }
+
+    private int handlePipeSelection() {
+
+        String selectedOption = pipeSelection.getValue();
+
+        // Realizar acciones dependiendo de la opción seleccionada
+        if ("Vertical".equals(selectedOption)) {
+           return 1;
+
+        } else if ("Horizontal".equals(selectedOption)) {
+           return 2;
+        } else if ("Circular".equals(selectedOption)) {
+           return 3;
+        }
+        return -1;
     }
 
     @Override
@@ -148,6 +181,9 @@ public class SecondViewController implements Initializable {
         solutionImageView.setFitHeight(solutionImageView.getFitHeight());
         solutionButton.setStyle("-fx-padding: 0;");
         solutionButton.setGraphic(solutionImageView);
+
+        pipeSelection.getItems().addAll("Vertical", "Horizontal", "Circular");
+        pipeSelection.setOnAction(event -> handlePipeSelection());
 
         new Thread(
                 () ->{

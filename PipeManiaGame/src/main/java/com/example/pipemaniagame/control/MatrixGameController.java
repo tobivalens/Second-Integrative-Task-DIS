@@ -331,7 +331,7 @@ public class MatrixGameController {
     }
 
     public boolean validateVertical(Vertex<Box> value) {
-        int valueIndex = matrixGraph.returnIndex(value);//FIXME
+        int valueIndex = matrixGraph.returnIndex(value);
         for (int i = 0; i < matrixGraph.getVertexList().size(); i++) {
             if (matrixGraph.getMatrixAdj()[valueIndex][i] == 1) {
                 Vertex<Box> c = matrixGraph.indexVertex(i);
@@ -371,96 +371,17 @@ public class MatrixGameController {
     }
 
     public void showShorterSolution(Vertex<Box> source, Vertex<Box> drain) {
-        List<Vertex<Box>> shortestPath = dijkstra(source, drain);
+        List<Vertex<Box>> shortestPath = matrixGraph.dijkstra(source, drain);
 
         for (Vertex<Box> pathVertex : shortestPath) {
             for (Vertex<Box> graphVertex : matrixGraph.getVertexList()) {
                 if (pathVertex == graphVertex) {
                     Box box = (Box) graphVertex.getContent();
                     box.setShortActivate(true);
-                    System.out.println("si la di ois");
+
                 }
             }
         }
-    }
-
-    public List<Vertex<Box>> dijkstra(Vertex<Box> source, Vertex<Box> drain) {
-        Map<Vertex<Box>, Integer> distance = new HashMap<>();
-        Map<Vertex<Box>, Vertex<Box>> predecessor = new HashMap<>();
-        Set<Vertex<Box>> settled = new HashSet<>();
-
-        distance.put(source, 0);
-
-        while (true) {
-            Vertex<Box> current = getClosestVertex(distance, settled);
-            if (current == null) {
-                break;
-            }
-
-            settled.add(current);
-
-            for (Vertex<Box> neighbor : getNeighbors(current)) {
-                if (!settled.contains(neighbor)) {
-                    int newDistance = distance.get(current) +1;
-
-                    if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
-                        distance.put(neighbor, newDistance);
-                        predecessor.put(neighbor, current);
-                    }
-                }
-            }
-        }
-
-        return reconstructPath(source, drain, predecessor);
-    }
-
-    private List<Vertex<Box>> getNeighbors(Vertex<Box> vertex) {
-        List<Vertex<Box>> neighbors = new ArrayList<>();
-        int vertexIndex = matrixGraph.getVertexList().indexOf(vertex);
-
-        for (int i = 0; i < matrixGraph.getMaxVertex(); i++) {
-            if (matrixGraph.getMatrixAdj()[vertexIndex][i] == 1) {
-                neighbors.add(matrixGraph.indexVertex(i));
-            }
-        }
-
-        return neighbors;
-    }
-
-    private Vertex<Box> getClosestVertex(Map<Vertex<Box>, Integer> distance, Set<Vertex<Box>> settled) {
-        Vertex<Box> closestVertex = null;
-        int minDistance = Integer.MAX_VALUE;
-
-        for (Map.Entry<Vertex<Box>, Integer> entry : distance.entrySet()) {
-            Vertex<Box> vertex = entry.getKey();
-            int dist = entry.getValue();
-
-            if (!settled.contains(vertex) && dist < minDistance) {
-                minDistance = dist;
-                closestVertex = vertex;
-            }
-        }
-
-        return closestVertex;
-    }
-
-    private List<Vertex<Box>> reconstructPath(Vertex<Box> source, Vertex<Box> drain, Map<Vertex<Box>, Vertex<Box>> predecessor) {
-        List<Vertex<Box>> path = new ArrayList<>();
-        Vertex<Box> current = drain;
-
-        while (current != null && current != source) {
-            path.add(current);
-            current = predecessor.get(current);
-        }
-
-        if (current == source) {
-            path.add(source);
-            Collections.reverse(path);
-        } else {
-            path.clear();
-        }
-
-        return path;
     }
 
 }

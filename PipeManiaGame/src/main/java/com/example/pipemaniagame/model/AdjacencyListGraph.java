@@ -1,6 +1,7 @@
 package com.example.pipemaniagame.model;
 
-import java.util.ArrayList;
+import java.util.*;
+
 public class AdjacencyListGraph<T>{
     public ArrayList<Vertex<T>> getAdjacencyList() {
         return adjacencyList;
@@ -89,6 +90,58 @@ public class AdjacencyListGraph<T>{
         }
         return sb.toString();
     }
+
+    public List<Vertex<T>> easierSolutionDijkstra(Vertex<T> source, Vertex<T> drain) {
+        Map<Vertex<T>, Integer> distance = new HashMap<>();
+        Map<Vertex<T>, Vertex<T>> predecessor = new HashMap<>();
+        PriorityQueue<Vertex<T>> minHeap = new PriorityQueue<>(Comparator.comparingInt(distance::get));
+
+        distance.put(source, 0);
+
+        minHeap.add(source);
+
+        while (!minHeap.isEmpty()) {
+            Vertex<T> currentVertex = minHeap.poll();
+
+
+            for (Vertex<T> neighbor : currentVertex.getAdjacencyListVertex()) {
+                int newDistance = distance.get(currentVertex) + 1;
+
+                if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
+
+                    distance.put(neighbor, newDistance);
+                    predecessor.put(neighbor, currentVertex);
+                    minHeap.add(neighbor);
+
+                }
+            }
+        }
+        return reconstructPath(source, drain, predecessor);
+    }
+
+
+    private List<Vertex<T>> reconstructPath(Vertex<T> source, Vertex<T> drain, Map<Vertex<T>, Vertex<T>> predecessor) {
+        List<Vertex<T>> path = new ArrayList<>();
+        Vertex<T> current = drain;
+        //revierte el camino
+        while (current != null && current != source) {
+            path.add(current);
+            current = predecessor.get(current);
+        }
+
+        // Si la ruta del drenaje es valida, invierte el camino para que vaya de la fuente al drenaje
+        if (current == source) {
+            path.add(source);
+            Collections.reverse(path);
+        } else {
+            path.clear();  // si no ps queda vacio
+        }
+
+        return path;
+    }
+
+
+
 
     public Vertex<T> searchValueIndex(int index){
        return  adjacencyList.get(index);

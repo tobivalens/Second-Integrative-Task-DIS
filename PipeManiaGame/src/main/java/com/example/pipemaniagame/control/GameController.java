@@ -7,10 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -54,29 +51,55 @@ public class GameController implements Initializable {
 
     private MatrixGameController gameController;
 
+    @FXML
+    private ChoiceBox<String> pipeSelection;
+
     private Image backgroundImage;
 
     @FXML
     private void handlePonerTuberia() {
+        try {
 
-        int x= Integer.parseInt(textRow.getText());
-        int y=  Integer.parseInt(textColumn.getText());
-        int pipe= Integer.parseInt(textPipeType.getText());
-        if(pipe <1 || pipe>3){
+            int x = Integer.parseInt(textRow.getText());
+            int y = Integer.parseInt(textColumn.getText());
+            int pipe= handlePipeSelection();
+            if (pipe < 1 || pipe > 3) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setContentText("Insert a valid Pipe number");
+                alert.showAndWait();
+            } else if (x > 7 || x < 0 || y > 7 || y < 0) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setContentText("Insert a valid number for row and column");
+                alert.showAndWait();
+            } else {
+                gameController.insertPipe(x, y, pipe);
+            }
+        }catch (NumberFormatException e){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");
-            alert.setContentText("Insert a valid Pipe number");
+            alert.setContentText("Invalid numbers for row and column");
             alert.showAndWait();
-        }else if(x>7 || x<0 || y>7 ||y<0){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Alert");
-            alert.setContentText("Insert a valid number for row and column");
-            alert.showAndWait();
-        } else{
-            gameController.insertPipe(x,y,pipe);
         }
 
     }
+    private int handlePipeSelection() {
+
+        String selectedOption = pipeSelection.getValue();
+
+        // Realizar acciones dependiendo de la opción seleccionada
+        if ("Vertical".equals(selectedOption)) {
+            return 1;
+
+        } else if ("Horizontal".equals(selectedOption)) {
+            return 2;
+        } else if ("Circular".equals(selectedOption)) {
+            return 3;
+        }
+        return -1;
+    }
+
 
     @FXML
     private void handleSimular() {
@@ -86,13 +109,17 @@ public class GameController implements Initializable {
             puntaje.setText(String.valueOf(gameController.calculateScore()));
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");
-            alert.setContentText("La diste toda reina");
+            alert.setContentText("Your solution is correct!");
             alert.showAndWait();
+
+              HelloApplication.openWindow("hello-view.fxml");
+              Stage stage = (Stage) simulate.getScene().getWindow();
+              stage.close();
 
         }else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Alert");
-            alert.setContentText("Perdiste horrible Payasota");
+            alert.setContentText("Your solution is incorrect, try again");
             alert.showAndWait();
         }
     }
@@ -113,6 +140,8 @@ public class GameController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.graphicsContext = this.gameCanvas.getGraphicsContext2D();
         this.gameController= new MatrixGameController(this.gameCanvas);
+        pipeSelection.getItems().addAll("Vertical", "Horizontal", "Circular");
+        pipeSelection.setOnAction(event -> handlePipeSelection());
         Image backgroundImage = new Image(getClass().getResource("/images/screen3.png").toExternalForm());
         BackgroundImage background = new BackgroundImage(
                 backgroundImage,
@@ -120,7 +149,7 @@ public class GameController implements Initializable {
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
                 BackgroundSize.DEFAULT);
-        //anchorPane.setBackground(new Background(background));
+        anchorPane.setBackground(new Background(background));
 
         Image buttonImage = new Image(getClass().getResource("/images/exitButton.png").toExternalForm());
         ImageView imageView = new ImageView(buttonImage);

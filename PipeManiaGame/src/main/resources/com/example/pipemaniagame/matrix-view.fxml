@@ -5,11 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.pipemaniagame.control.GameController"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pipemaniagame.control.GameController">
 
 
     <HBox layoutY="548.0" prefHeight="52.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="548.0">
@@ -44,6 +40,6 @@
         <font>
             <Font name="Bernard MT Condensed" size="14.0" />
         </font></Label>
-    <TextField fx:id="textPipeType" layoutX="610.0" layoutY="347.0" />
+   <ChoiceBox fx:id="pipeSelection" layoutX="617.0" layoutY="344.0" prefHeight="25.0" prefWidth="130.0" />
 
 </AnchorPane>

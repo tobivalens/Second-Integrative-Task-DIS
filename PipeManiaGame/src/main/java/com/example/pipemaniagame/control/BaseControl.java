@@ -318,7 +318,7 @@ public class BaseControl {
        return true;
    }
 
-   //Falta implementar Dijsktra
+
 
     public boolean earierSolutionActiveButton(){
         Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex());
@@ -328,7 +328,7 @@ public class BaseControl {
     }
 
     public void showShorterSolution(Vertex<Box> source, Vertex<Box> drain) {
-        List<Vertex<Box>> shortestPath = easierSolutionDijkstra(source, drain);
+        List<Vertex<Box>> shortestPath = adjacencyGraph.easierSolutionDijkstra(source, drain);
         for (Vertex<Box> pathVertex : shortestPath) {
             for (Vertex<Box> graphVertex : adjacencyGraph.getAdjacencyList()) {
                 if (pathVertex == graphVertex) {
@@ -339,60 +339,8 @@ public class BaseControl {
             }
         }
     }
-    public List<Vertex<Box>> easierSolutionDijkstra(Vertex<Box> source, Vertex<Box> drain) {
-        Map<Vertex<Box>, Integer> distance = new HashMap<>();
-        Map<Vertex<Box>, Vertex<Box>> predecessor = new HashMap<>();
-        PriorityQueue<Vertex<Box>> minHeap = new PriorityQueue<>(Comparator.comparingInt(distance::get));
-
-        distance.put(source, 0);
-
-        minHeap.add(source);
-
-        while (!minHeap.isEmpty()) {
-            Vertex<Box> currentVertex = minHeap.poll();
 
 
-            for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
-                int newDistance = distance.get(currentVertex) + 1;
-
-                if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
-
-                        distance.put(neighbor, newDistance);
-                        predecessor.put(neighbor, currentVertex);
-                        minHeap.add(neighbor);
-
-                }
-            }
-        }
-        return reconstructPath(source, drain, predecessor);
-    }
-
-
-    private List<Vertex<Box>> reconstructPath(Vertex<Box> source, Vertex<Box> drain, Map<Vertex<Box>, Vertex<Box>> predecessor) {
-        List<Vertex<Box>> path = new ArrayList<>();
-        Vertex<Box> current = drain;
-        //revierte el camino
-        while (current != null && current != source) {
-            path.add(current);
-            current = predecessor.get(current);
-        }
-
-        // Si la ruta del drenaje es valida, invierte el camino para que vaya de la fuente al drenaje
-        if (current == source) {
-            path.add(source);
-            Collections.reverse(path);
-        } else {
-            path.clear();  // si no ps queda vacio
-        }
-
-        return path;
-    }
-
-
-
-    public void deleteGraph(){// falta hacer lo de que en exit llame a este metodo
-
-    }
 
     public int coordinadeToIdex(int x, int y){
         return x*8+y;

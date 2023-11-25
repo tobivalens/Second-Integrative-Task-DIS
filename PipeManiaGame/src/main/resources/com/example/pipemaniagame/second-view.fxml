@@ -39,5 +39,5 @@
       <font>
          <Font name="Bernard MT Condensed" size="14.0" />
       </font></Label>
-   <TextField fx:id="textPipeType" layoutX="610.0" layoutY="347.0" />
+   <ChoiceBox fx:id="pipeSelection" layoutX="612.0" layoutY="345.0" prefWidth="150.0" />
 </AnchorPane>
