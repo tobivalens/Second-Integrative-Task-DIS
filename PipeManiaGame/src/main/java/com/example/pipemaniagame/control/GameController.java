@@ -99,7 +99,7 @@ public class GameController implements Initializable {
 
     @FXML
     private void solutionButtonAction(){
-       // gameController.earierSolutionActiveButton();
+       gameController.easierSolutionActiveButton();
     }
 
     @FXML

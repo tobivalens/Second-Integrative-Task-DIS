@@ -213,7 +213,7 @@ public class BaseControl {
     public boolean simulate(){
         Vertex waterSource = adjacencyGraph.getAdjacencyList().get(getWatersourceIndex());
         Vertex drain = adjacencyGraph.getAdjacencyList().get(getDrainIndex());
-
+/**
         for(int i=0; i< waterSource.getAdjacencyListVertex().size();i++){
             Vertex<Box> c= (Vertex<Box>) waterSource.getAdjacencyListVertex().get(i);
             if(c.getContent().getContent() instanceof  Pipe){
@@ -222,7 +222,7 @@ public class BaseControl {
                     waterSource.getAdjacencyListVertex().remove(i);
                 }
             }
-        }
+        }*/
 
         if( simulateBFS(waterSource,drain)){
             return true;
@@ -286,7 +286,7 @@ public class BaseControl {
             if(c.getContent().getContent() instanceof  Pipe){
                 PipeType p=c.getContent().getContent().getPipeType();
                 if(p==PipeType.CIRCULAR){
-                    return false;
+                    return true;
                 }
             }
         }
@@ -342,39 +342,30 @@ public class BaseControl {
         }
     }
     public List<Vertex<Box>> easierSolutionDijkstra(Vertex<Box> source, Vertex<Box> drain) {
-        // Inicialización de las estructuras de datos necesarias
-        Map<Vertex<Box>, Integer> distance = new HashMap<>();  // Almacena las distancias desde la fuente hasta cada nodo
-        Map<Vertex<Box>, Vertex<Box>> predecessor = new HashMap<>();  // Almacena los predecesores de cada nodo en el camino más corto
-        PriorityQueue<Vertex<Box>> minHeap = new PriorityQueue<>(Comparator.comparingInt(distance::get));  // Cola de prioridad basada en las distancias
+        Map<Vertex<Box>, Integer> distance = new HashMap<>();
+        Map<Vertex<Box>, Vertex<Box>> predecessor = new HashMap<>();
+        PriorityQueue<Vertex<Box>> minHeap = new PriorityQueue<>(Comparator.comparingInt(distance::get));
 
-        // Inicialización de la distancia del nodo fuente como 0
         distance.put(source, 0);
 
-        // Añade el nodo fuente a la cola de prioridad
         minHeap.add(source);
 
-        // Bucle principal de Dijkstra
         while (!minHeap.isEmpty()) {
-            // Obtiene el nodo con la distancia mínima desde la fuente
             Vertex<Box> currentVertex = minHeap.poll();
 
-            // Explora los vecinos del nodo actual
+
             for (Vertex<Box> neighbor : currentVertex.getAdjacencyListVertex()) {
-                // Calcula la nueva distancia desde la fuente hasta el vecino
                 int newDistance = distance.get(currentVertex) + 1;
 
-                // Actualiza la distancia y el predecesor si se encuentra un camino más corto
                 if (!distance.containsKey(neighbor) || newDistance < distance.get(neighbor)) {
-                    if(restriction(currentVertex,neighbor,minHeap)){
+
                         distance.put(neighbor, newDistance);
                         predecessor.put(neighbor, currentVertex);
-                        minHeap.add(neighbor);  // Añade el vecino a la cola de prioridad para explorar sus vecinos
-                    }
+                        minHeap.add(neighbor);
+
                 }
             }
         }
-
-
         return reconstructPath(source, drain, predecessor);
     }
 
@@ -400,128 +391,6 @@ public class BaseControl {
     }
 
 
-    public boolean restriction(Vertex<Box>actual, Vertex<Box>neighbor, PriorityQueue<Vertex<Box>> minHeap){
-        int index= adjacencyGraph.getAdjacencyList().indexOf(actual);
-        int neighIndex= adjacencyGraph.getAdjacencyList().indexOf(neighbor);
-
-
-        if(neighbor.getContent().getContent()!=null &&neighbor.getContent().getContent().getPipeType()==PipeType.WATERSOURCE){
-            return true;
-        }
-        //neighbr seria el pre, el pre pre seria pre neighbor
-
-        //si esta abajo
-        if(neighIndex==index+8){
-            Vertex<Box>preNeighbor;
-
-            // caso uno pre pre a la izquierda
-            preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex-1) ;
-            int preNeighIndex= adjacencyGraph.getAdjacencyList().indexOf(preNeighbor);
-            if(minHeap.contains(preNeighbor)){
-                Vertex<Box> upPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndex-8);
-                Vertex<Box> downPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndex+8);
-                if(minHeap.contains(upPreNeighbor)|| minHeap.contains(downPreNeighbor)){
-                    return false;
-                }
-            }
-
-            Vertex<Box>preNeighborDer=adjacencyGraph.getAdjacencyList().get(neighIndex+1);
-            int preNeighIndexDer= adjacencyGraph.getAdjacencyList().indexOf(preNeighborDer);
-
-            // caso dos pre pre a la derecha
-             preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex+1) ;
-              if(minHeap.contains(preNeighbor)){
-                Vertex<Box> upPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndexDer-8);
-                Vertex<Box> downPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndexDer+8);
-                if(minHeap.contains(upPreNeighbor)|| minHeap.contains(downPreNeighbor)){
-                    return false;
-                }
-            }
-
-            //creo que el de arriba no se puede dado que arriba esta el actual y el de abajo no importa pq es valido
-        }else if(neighIndex==index-8)//si esta arriba
-        {
-            Vertex<Box>preNeighbor;
-            //si esta a la izq del neighbor
-            preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex+1) ;
-
-            Vertex<Box>preNeighborIzq=adjacencyGraph.getAdjacencyList().get(neighIndex-1);
-            int preNeighIndex= adjacencyGraph.getAdjacencyList().indexOf(preNeighborIzq);
-
-            if(minHeap.contains(preNeighbor)){
-                Vertex<Box> upPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndex-8);
-                Vertex<Box> downPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndex+8);
-                if(minHeap.contains(upPreNeighbor)|| minHeap.contains(downPreNeighbor)){
-                    return false;
-                }
-            }
-            //si esta a la der del neighbor
-            Vertex<Box>preNeighborDer=adjacencyGraph.getAdjacencyList().get(neighIndex+1);
-            int preNeighIndexDer= adjacencyGraph.getAdjacencyList().indexOf(preNeighborDer);
-
-            preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex-1) ;
-            if(minHeap.contains(preNeighbor)){
-                Vertex<Box> upPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndexDer-8);
-                Vertex<Box> downPreNeighbor= adjacencyGraph.getAdjacencyList().get(preNeighIndexDer+8);
-                if(minHeap.contains(upPreNeighbor)|| minHeap.contains(downPreNeighbor)){
-                    return false;
-                }
-            }
-
-        } else if (neighIndex==index+1) {//derecha
-            Vertex<Box>preNeighbor;
-            // caso uno pre pre a la arriba
-            preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex-8) ;
-            int indexPreNeighbot= adjacencyGraph.getAdjacencyList().indexOf(preNeighbor);
-            if(minHeap.contains(preNeighbor)){
-                Vertex<Box> leftPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot-1);
-                Vertex<Box> rightPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot+1);
-                if(minHeap.contains(leftPreNeighbor)|| minHeap.contains(rightPreNeighbor)){
-                    return false;
-                }
-            }
-
-
-            preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex+8) ;
-            indexPreNeighbot=adjacencyGraph.getAdjacencyList().indexOf(preNeighbor);
-            if(minHeap.contains(preNeighbor)){
-                Vertex<Box> leftPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot-1);
-                Vertex<Box> rightPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot+1);
-                if(minHeap.contains(leftPreNeighbor)|| minHeap.contains(rightPreNeighbor)){
-                    return false;
-                }
-            }
-
-
-        }else if (neighIndex==index-1){ //izquierda
-
-            Vertex<Box>preNeighbor;
-            // caso uno pre pre a la abajo
-            preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex+8);
-            int indexPreNeighbot= adjacencyGraph.getAdjacencyList().indexOf(preNeighbor);
-
-            if(minHeap.contains(preNeighbor)){
-                Vertex<Box> leftPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot-1);
-                Vertex<Box> rightPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot+1);
-                if(minHeap.contains(leftPreNeighbor)|| minHeap.contains(rightPreNeighbor)){
-                    return false;
-                }
-            }
-
-            preNeighbor= adjacencyGraph.getAdjacencyList().get(neighIndex-8) ;
-            indexPreNeighbot=adjacencyGraph.getAdjacencyList().indexOf(preNeighbor);
-            if(minHeap.contains(preNeighbor)){
-                Vertex<Box> leftPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot-1);
-                Vertex<Box> rightPreNeighbor= adjacencyGraph.getAdjacencyList().get(indexPreNeighbot+1);
-                if(minHeap.contains(leftPreNeighbor)|| minHeap.contains(rightPreNeighbor)){
-                    return false;
-                }
-            }
-
-        }
-
-        return true;
-    }
 
     public void deleteGraph(){// falta hacer lo de que en exit llame a este metodo
 
