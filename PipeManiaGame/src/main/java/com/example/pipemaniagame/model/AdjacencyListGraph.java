@@ -129,12 +129,12 @@ public class AdjacencyListGraph<T>{
             current = predecessor.get(current);
         }
 
-        // Si la ruta del drenaje es valida, invierte el camino para que vaya de la fuente al drenaje
+
         if (current == source) {
             path.add(source);
             Collections.reverse(path);
         } else {
-            path.clear();  // si no ps queda vacio
+            path.clear();
         }
 
         return path;

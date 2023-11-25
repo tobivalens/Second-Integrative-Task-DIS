@@ -198,6 +198,46 @@ public class TestMatrixGraph {
 
     }
 
+    @Test
+    public void testDijkstraShortestPath() {
+        MatrixGraph<Integer> graph = new MatrixGraph<>(5);
+        graph.addEdge(0, 1);
+        graph.addEdge(0, 2);
+        graph.addEdge(1, 3);
+        graph.addEdge(2, 4);
+        Vertex<Integer> source = graph.indexVertex(0);
+        Vertex<Integer> drain = graph.indexVertex(4);
+
+        List<Vertex<Integer>> shortestPath = graph.dijkstra(source, drain);
+
+        assertEquals(1, shortestPath.size());
+        assertEquals(source, shortestPath.get(0));
+
+    }
+
+    @Test
+    public void testDijkstraDisconnectedVertices() {
+        MatrixGraph<Integer> graph = new MatrixGraph<>(3);
+        Vertex<Integer> source = graph.indexVertex(0);
+        Vertex<Integer> drain = graph.indexVertex(2);
+
+        List<Vertex<Integer>> shortestPath = graph.dijkstra(source, drain);
+
+        assertTrue(shortestPath.isEmpty());
+    }
+
+    @Test
+    public void testDijkstraSameSourceAndDrain() {
+        MatrixGraph<Integer> graph = new MatrixGraph<>(4);
+        graph.addEdge(0, 1);
+        graph.addEdge(1, 2);
+        Vertex<Integer> sourceAndDrain = graph.indexVertex(0);
+
+        List<Vertex<Integer>> shortestPath = graph.dijkstra(sourceAndDrain, sourceAndDrain);
+
+        assertEquals(2, shortestPath.size());
+        assertEquals(sourceAndDrain, shortestPath.get(0));
+    }
 
 
 
